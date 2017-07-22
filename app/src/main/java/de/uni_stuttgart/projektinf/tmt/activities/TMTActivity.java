@@ -36,7 +36,7 @@ public class TMTActivity extends AppCompatActivity {
             paint.setColor(Color.WHITE);
             canvas.drawPaint(paint);
             // Use Color.parseColor to define HTML colors
-            paint.setColor(Color.parseColor("#CD5C5C"));
+            paint.setColor(Color.GREEN);
             canvas.drawCircle(x / 2, y / 2, radius, paint);
         }
     }
