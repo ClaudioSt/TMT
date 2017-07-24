@@ -7,11 +7,17 @@
     tools:context="de.uni_stuttgart.projektinf.tmt.activities.UserFormActivity">
 
     <LinearLayout
-        android:layout_width="368dp"
-        android:layout_height="495dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <RadioGroup
             android:layout_width="match_parent"
@@ -20,37 +26,36 @@
 
             <TextView
                 android:id="@+id/textView"
-                android:layout_width="93dp"
-                android:layout_height="81dp"
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
                 android:gravity="center_vertical"
                 android:text="Gender:"
+                android:textSize="32sp"
+                android:layout_weight="0.25" />
+
+            <RadioButton
+                android:id="@+id/radioButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Female"
                 android:textSize="24sp"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="16dp" />
+                android:layout_weight="0.25" />
 
             <RadioButton
                 android:id="@+id/radioButton2"
-                android:layout_width="96dp"
-                android:layout_height="match_parent"
-                android:text="Female"
-                tools:layout_editor_absoluteX="198dp"
-                tools:layout_editor_absoluteY="16dp" />
-
-            <RadioButton
-                android:id="@+id/radioButton"
-                android:layout_width="92dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Male"
-                tools:layout_editor_absoluteX="117dp"
-                tools:layout_editor_absoluteY="16dp" />
+                android:textSize="24sp"
+                android:layout_weight="0.25" />
 
             <RadioButton
                 android:id="@+id/radioButton3"
-                android:layout_width="102dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Other"
-                tools:layout_editor_absoluteX="291dp"
-                tools:layout_editor_absoluteY="16dp" />
+                android:textSize="24sp"
+                android:layout_weight="0.25"/>
 
         </RadioGroup>
 
@@ -62,12 +67,11 @@
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
-                android:layout_height="89dp"
-                android:layout_weight="0.10"
+                android:layout_height="80dp"
+                android:layout_weight="0.1"
                 android:gravity="center_vertical"
                 android:text="Age:"
-                android:textAlignment="textStart"
-                android:textSize="24sp" />
+                android:textSize="32sp" />
 
             <EditText
                 android:id="@+id/editText"
@@ -75,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="number"
-                android:layout_weight="0.04" />
+                android:layout_weight="1" />
 
         </LinearLayout>
 
@@ -87,32 +91,35 @@
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
-                android:layout_height="99dp"
-                android:layout_weight="1.28"
+                android:layout_height="80dp"
+                android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Sight:"
-                android:textSize="24sp" />
+                android:textSize="32sp" />
 
             <RadioButton
                 android:id="@+id/radioButton7"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="0.98"
-                android:text="Glasses" />
+                android:layout_weight="1"
+                android:text="Glasses"
+                android:textSize="24sp" />
 
             <RadioButton
                 android:id="@+id/radioButton4"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="0.73"
-                android:text="Contacts" />
+                android:layout_weight="1"
+                android:text="Contacts"
+                android:textSize="24sp" />
 
             <RadioButton
                 android:id="@+id/radioButton8"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1.01"
-                android:text="None" />
+                android:layout_weight="1"
+                android:text="None"
+                android:textSize="24sp" />
         </RadioGroup>
 
         <RadioGroup
@@ -126,21 +133,24 @@
                 android:layout_height="123dp"
                 android:gravity="center_vertical"
                 android:text="Handedness:"
-                android:textSize="24sp" />
+                android:layout_weight="1"
+                android:textSize="32sp" />
 
             <RadioButton
                 android:id="@+id/radioButton5"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="0.69"
-                android:text="Right-Handed" />
+                android:layout_weight="1"
+                android:text="Right-Handed"
+                android:textSize="24sp" />
 
             <RadioButton
                 android:id="@+id/radioButton6"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Left-Handed" />
+                android:text="Left-Handed"
+                android:textSize="24sp" />
 
         </RadioGroup>
 
