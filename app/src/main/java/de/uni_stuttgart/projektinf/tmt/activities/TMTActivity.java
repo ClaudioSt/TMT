@@ -1,5 +1,6 @@
 package de.uni_stuttgart.projektinf.tmt.activities;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 
@@ -26,6 +28,14 @@ public class TMTActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(new TMTView(this));
+        getSupportActionBar().hide();
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+
+        decorView.setSystemUiVisibility(uiOptions);
+
+
         calculatePositions();
     }
 
@@ -49,6 +59,8 @@ public class TMTActivity extends AppCompatActivity {
         display.getSize(size);
         int screenWidth = size.x;
         int screenHeight = size.y;
+
+
         int randX = 0;
         int randY = 0;
 
@@ -59,7 +71,14 @@ public class TMTActivity extends AppCompatActivity {
             while (!foundPos)
             {
                 randX = (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ) + Circle.RADIUS;
+
+                Log.i("myTag", "x: " + screenWidth);
+                Log.i("myTag", "y: " + screenHeight);
+                Log.i("myTag", "Circle Radius: " + Circle.RADIUS);
+                Log.i("myTag", "Bla: " + (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ));
+
                 randY = (int)( Math.random() * (screenHeight - 2*Circle.RADIUS) ) + Circle.RADIUS;
+
 
                 //test if position is far away enough from others (euklidischer Abstand):
                 boolean distanceIsOk = true;
