@@ -1,7 +1,8 @@
 package de.uni_stuttgart.projektinf.tmt.classes;
 
 /**
- * Created by Clemens on 23.07.2017.
+ * The Circle Class.
+ * This class is used to represent all the circles in the TMT.
  */
 
 public class Circle {

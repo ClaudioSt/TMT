@@ -18,6 +18,11 @@ import java.util.List;
 import de.uni_stuttgart.projektinf.tmt.R;
 import de.uni_stuttgart.projektinf.tmt.classes.Circle;
 
+/**
+ * The TMT Activity.
+ * Here the user takes the actual Trail Making Test.
+ *
+ */
 public class TMTActivity extends AppCompatActivity {
 
     private static final int NUMBEROFCIRCLES = 8;
