@@ -114,9 +114,12 @@ public class TMTView extends AppCompatImageView{
             canvas.drawPaint(paint);
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(4.5f);
-            canvas.drawCircle(circle.getPosX() / 2, circle.getPosY() / 2, Circle.RADIUS, paint);
+            // draw circle line:
+            canvas.drawCircle(circle.getPosX(), circle.getPosY(), Circle.RADIUS, paint);
+            // draw content:
+            paint.setTextSize(50);
+            canvas.drawText(circle.getContent(), circle.getPosX(), circle.getPosY(), paint);
         }
-
     }
 
     public void setCircles(List<Circle> cl) {

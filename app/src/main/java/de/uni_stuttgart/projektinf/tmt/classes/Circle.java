@@ -9,6 +9,7 @@ public class Circle {
     public static final int RADIUS = 100;
     private int posX;
     private  int posY;
+    private String content;
 
     public Circle(int x, int y){
         this.posX = x;
@@ -21,5 +22,11 @@ public class Circle {
     }
     public int getPosY(){
         return posY;
+    }
+    public void setContent(String content){
+        this.content = content;
+    }
+    public String getContent(){
+        return content;
     }
 }

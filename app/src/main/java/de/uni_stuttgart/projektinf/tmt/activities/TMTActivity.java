@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class TMTActivity extends AppCompatActivity {
     private void calculatePositions(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
-        display.getSize(size);
+        display.getRealSize(size);
         int screenWidth = size.x;
         int screenHeight = size.y;
 
@@ -88,7 +89,9 @@ public class TMTActivity extends AppCompatActivity {
 
                 if (distanceIsOk){
                     foundPos = true;
-                    circleList.add(new Circle(randX, randY));
+                    Circle newCircle = new Circle(randX, randY);
+                    newCircle.setContent(""+(i+1));
+                    circleList.add(newCircle);
                 }
 
             }
