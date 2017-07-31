@@ -1,6 +1,5 @@
 package de.uni_stuttgart.projektinf.tmt.activities;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,6 +16,7 @@ import java.util.List;
 
 import de.uni_stuttgart.projektinf.tmt.R;
 import de.uni_stuttgart.projektinf.tmt.classes.Circle;
+import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
 
 /**
  * The TMT Activity.
@@ -27,36 +27,27 @@ public class TMTActivity extends AppCompatActivity {
 
     private static final int NUMBEROFCIRCLES = 8;
     List<Circle> circleList = new ArrayList<Circle>();
+    private TMTView tmtView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new TMTView(this));
-        getSupportActionBar().hide();
-        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        setContentView(R.layout.activity_tmt);
+        tmtView = (TMTView)findViewById(R.id.tmt_view);
 
+        // hide the action bar:
+        getSupportActionBar().hide();
+        // hide the status bar:
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
-
+        // calculate positions of circles and send to View to draw:
         calculatePositions();
+        tmtView.setCircles(circleList);
     }
 
-    public class TMTView extends View {
-        public TMTView(Context context) {
-            super(context);
-            // TODO Auto-generated constructor stub
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            drawTMT(canvas);
-        }
-
-    }
 
     private void calculatePositions(){
         Display display = getWindowManager().getDefaultDisplay();
@@ -106,18 +97,6 @@ public class TMTActivity extends AppCompatActivity {
 
     }
 
-    private void drawTMT(Canvas canvas){
 
-        for(Circle circle : circleList) {
-            Paint paint = new Paint();
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setColor(Color.WHITE);
-            canvas.drawPaint(paint);
-            paint.setColor(Color.BLACK);
-            paint.setStrokeWidth(4.5f);
-            canvas.drawCircle(circle.getPosX() / 2, circle.getPosY() / 2, Circle.RADIUS, paint);
-        }
-
-    }
 
 }
