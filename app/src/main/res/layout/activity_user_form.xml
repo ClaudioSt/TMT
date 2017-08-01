@@ -161,7 +161,7 @@
             android:id="@+id/buttonUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="goToSequenceChooser"
+            android:onClick="UserClickedOk"
             android:text="OK" />
 
 
