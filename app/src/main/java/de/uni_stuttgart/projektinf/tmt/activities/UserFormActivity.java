@@ -37,11 +37,13 @@ public class UserFormActivity extends AppCompatActivity {
 
 
     /**
-     * Method UserClickedOk takes the information about the user and creates a User object.
+     * Method UserClickedOk is called after the user presses the "Ok" button.
+     * It takes the information about the user and creates a User object.
      * It then takes the user to the next activity, which is the choose sequence activity.
      *
      * @param view
      * @see ChooseSequenceActivity
+     * @see de.uni_stuttgart.projektinf.tmt.classes.User
      */
     public void UserClickedOk(View view){
         // get information and create User object with it:
