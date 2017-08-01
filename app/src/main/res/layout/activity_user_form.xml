@@ -20,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <RadioGroup
+            android:id="@+id/radioGender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -74,7 +75,7 @@
                 android:textSize="32sp" />
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/editTextAge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -84,6 +85,7 @@
         </LinearLayout>
 
         <RadioGroup
+            android:id="@+id/radioSight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -123,6 +125,7 @@
         </RadioGroup>
 
         <RadioGroup
+            android:id="@+id/radioHand"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -155,7 +158,7 @@
         </RadioGroup>
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/buttonUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="goToSequenceChooser"

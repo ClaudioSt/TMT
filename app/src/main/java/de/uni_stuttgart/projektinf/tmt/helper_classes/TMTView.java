@@ -17,7 +17,8 @@ import de.uni_stuttgart.projektinf.tmt.R;
 import de.uni_stuttgart.projektinf.tmt.classes.Circle;
 
 /**
- * Created by Clemens on 31.07.2017.
+ * The TMT View Class.
+ * A custom view for drawing all the TMT content on canvas.
  */
 
 public class TMTView extends AppCompatImageView{
@@ -41,7 +42,6 @@ public class TMTView extends AppCompatImageView{
 
     public TMTView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        //this.circleList = cl;
         init();
     }
 
@@ -108,16 +108,19 @@ public class TMTView extends AppCompatImageView{
     private void drawCircles(Canvas canvas){
 
         for(Circle circle : circleList) {
+            // setup paint to draw:
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(Color.WHITE);
             canvas.drawPaint(paint);
-            paint.setColor(Color.BLACK);
-            paint.setStrokeWidth(4.5f);
+            paint.setColor(Circle.color);
+            paint.setStrokeWidth(Circle.strokeWidth);
+
             // draw circle line:
             canvas.drawCircle(circle.getPosX(), circle.getPosY(), Circle.RADIUS, paint);
+
             // draw content:
-            paint.setTextSize(50);
+            paint.setTextSize(Circle.contentTextSize);
             canvas.drawText(circle.getContent(), circle.getPosX(), circle.getPosY(), paint);
         }
     }

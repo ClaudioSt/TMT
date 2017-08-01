@@ -11,10 +11,14 @@ public class User {
     private int sight;
     private boolean rightHanded;
 
-    /*
-    public User (gender, age, sight, rightHanded){
+
+    public User (int gender, int age, int sight, boolean rightHanded){
+        this.gender = gender;
+        this.age = age;
+        this.sight = sight;
+        this.rightHanded = rightHanded;
 
     }
-    */
+
 
 }
