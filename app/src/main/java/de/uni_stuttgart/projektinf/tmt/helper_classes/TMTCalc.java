@@ -46,6 +46,25 @@ public class TMTCalc {
     // on how hard the user is pressing on the screen using the surface area of the pressed stylus:
     private int totalAverageSize;
 
+    // container for all the values:
+    float[] tmtValues = new float[16];
+
+    public void startTime(){
+
+    }
+    public void stopTime(){
+
+    }
+    public void incrementErrors(){
+
+    }
 
 
+
+    public float[] calcAllValues(){
+
+
+
+        return tmtValues;
+    }
 }
