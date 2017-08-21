@@ -84,6 +84,7 @@ public class TMTView extends AppCompatImageView{
     public boolean onTouchEvent(MotionEvent event) {
         float touchX = event.getX();
         float touchY = event.getY();
+        checkCircleTouch(touchX, touchY);
         //respond to down, move and up events
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -105,6 +106,17 @@ public class TMTView extends AppCompatImageView{
         return true;
     }
 
+    private void checkCircleTouch(float touchX, float touchY) {
+        for(Circle circle : circleList) {
+            int distance = (int) Math.sqrt( (circle.getPosX() - touchX)*(circle.getPosX()- touchX) + (circle.getPosY() - touchY)*(circle.getPosY() - touchY) );
+            if (distance < Circle.RADIUS + Circle.TOLERANCE){
+                circle.setTouched();
+                break;
+            }
+        }
+
+    }
+
     private void drawCircles(Canvas canvas){
 
         for(Circle circle : circleList) {
@@ -113,7 +125,7 @@ public class TMTView extends AppCompatImageView{
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(Color.WHITE);
             canvas.drawPaint(paint);
-            paint.setColor(Circle.color);
+            paint.setColor(circle.getColor());
             paint.setStrokeWidth(Circle.strokeWidth);
 
             // draw circle line:
