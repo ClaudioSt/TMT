@@ -2,6 +2,8 @@ package de.uni_stuttgart.projektinf.tmt.classes;
 
 import android.graphics.Color;
 
+import de.uni_stuttgart.projektinf.tmt.activities.TMTActivity;
+
 /**
  * The Circle Class.
  * This class is used to represent all the circles in the TMT.
@@ -26,10 +28,13 @@ public class Circle {
     private String content;
     // already touched by user?
     private boolean gotTouched = false;
+    // the sequence number of the corresponding order:
+    private int sequenceNumber;
 
-    public Circle(int x, int y){
+    public Circle(int x, int y, int number){
         this.posX = x;
         this.posY = y;
+        this.sequenceNumber = number;
     }
 
 
@@ -51,5 +56,29 @@ public class Circle {
     public void setTouched(){
         gotTouched = true;
         color = Color.GREEN;
+    }
+    public boolean gotTouched(){
+        return gotTouched;
+    }
+
+    public void checkIfCorrect() {
+        if (TMTActivity.currentCircleNumber == sequenceNumber)
+        {
+            TMTActivity.currentCircleNumber++;
+            setTouched();
+
+            // check if it is the last one:
+            if (sequenceNumber == TMTActivity.NUMBEROFCIRCLES)
+            {
+                TMTActivity.TMTCompleted();
+            }
+        }
+        else
+        {
+            // TODO: set red cross and jump back to last circle
+            color = Color.RED;
+        }
+
+
     }
 }

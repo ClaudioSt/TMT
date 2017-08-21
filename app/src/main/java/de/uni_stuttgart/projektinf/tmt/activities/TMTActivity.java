@@ -1,16 +1,12 @@
 package de.uni_stuttgart.projektinf.tmt.activities;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.content.Intent;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +22,11 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
  */
 public class TMTActivity extends AppCompatActivity {
 
-    private static final int NUMBEROFCIRCLES = 8;
+    public static final int NUMBEROFCIRCLES = 8;
+    public static int currentCircleNumber = 1;
     List<Circle> circleList = new ArrayList<Circle>();
     private TMTView tmtView;
+    private static Context thisContext;
 
 
     @Override
@@ -36,6 +34,7 @@ public class TMTActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tmt);
         tmtView = (TMTView)findViewById(R.id.tmt_view);
+        thisContext = this;
 
         // hide the action bar:
         getSupportActionBar().hide();
@@ -45,12 +44,12 @@ public class TMTActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
 
         // calculate positions of circles and send to View to draw:
-        calculatePositions();
+        calculateCirclePositions();
         tmtView.setCircles(circleList);
     }
 
 
-    private void calculatePositions(){
+    private void calculateCirclePositions(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getRealSize(size);
@@ -69,11 +68,6 @@ public class TMTActivity extends AppCompatActivity {
             {
                 randX = (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ) + Circle.RADIUS;
 
-                Log.i("myTag", "x: " + screenWidth);
-                Log.i("myTag", "y: " + screenHeight);
-                Log.i("myTag", "Circle Radius: " + Circle.RADIUS);
-                Log.i("myTag", "Bla: " + (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ));
-
                 randY = (int)( Math.random() * (screenHeight - 2*Circle.RADIUS) ) + Circle.RADIUS;
 
 
@@ -89,7 +83,7 @@ public class TMTActivity extends AppCompatActivity {
 
                 if (distanceIsOk){
                     foundPos = true;
-                    Circle newCircle = new Circle(randX, randY);
+                    Circle newCircle = new Circle(randX, randY, (i+1));
                     newCircle.setContent(""+(i+1));
                     circleList.add(newCircle);
                 }
@@ -101,5 +95,9 @@ public class TMTActivity extends AppCompatActivity {
     }
 
 
-
+    public static void TMTCompleted() {
+        // takes user to the next activity:
+        Intent viewResultsIntent = new Intent(thisContext, ViewResultsActivity.class);
+        thisContext.startActivity(viewResultsIntent);
+    }
 }

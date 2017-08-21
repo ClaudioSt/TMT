@@ -107,11 +107,18 @@ public class TMTView extends AppCompatImageView{
     }
 
     private void checkCircleTouch(float touchX, float touchY) {
+        // go throw all circles to check if touched:
         for(Circle circle : circleList) {
-            int distance = (int) Math.sqrt( (circle.getPosX() - touchX)*(circle.getPosX()- touchX) + (circle.getPosY() - touchY)*(circle.getPosY() - touchY) );
-            if (distance < Circle.RADIUS + Circle.TOLERANCE){
-                circle.setTouched();
-                break;
+            // only look at circles that have not been touched already:
+            if (!circle.gotTouched()) {
+                // calculate distance from circle to touching point:
+                int distance = (int) Math.sqrt((circle.getPosX() - touchX) * (circle.getPosX() - touchX) + (circle.getPosY() - touchY) * (circle.getPosY() - touchY));
+                // check if distance is ok and really touched:
+                if (distance < Circle.RADIUS + Circle.TOLERANCE) {
+                    // if yes, look if it is the correct circle (respective order):
+                    circle.checkIfCorrect();
+                    break;
+                }
             }
         }
 
