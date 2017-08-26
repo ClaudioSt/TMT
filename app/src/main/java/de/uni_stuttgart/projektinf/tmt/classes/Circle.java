@@ -29,12 +29,13 @@ public class Circle {
     // already touched by user?
     private boolean gotTouched = false;
     // the sequence number of the corresponding order:
-    private int sequenceNumber;
+    private int sequenceNumberGlobal;
+    private int sequenceNumberLayer;
 
     public Circle(int x, int y, int number){
         this.posX = x;
         this.posY = y;
-        this.sequenceNumber = number;
+        this.sequenceNumberGlobal = number;
     }
 
 
@@ -62,13 +63,13 @@ public class Circle {
     }
 
     public void checkIfCorrect() {
-        if (TMTActivity.currentCircleNumber == sequenceNumber)
+        if (TMTActivity.currentCircleNumber == sequenceNumberGlobal)
         {
             TMTActivity.currentCircleNumber++;
             setTouched();
 
             // check if it is the last one:
-            if (sequenceNumber == TMTActivity.NUMBEROFCIRCLES)
+            if (sequenceNumberGlobal == TMTActivity.NUMBEROFCIRCLES)
             {
                 TMTActivity.TMTCompleted();
             }
