@@ -13,6 +13,7 @@ import java.util.List;
 
 import de.uni_stuttgart.projektinf.tmt.R;
 import de.uni_stuttgart.projektinf.tmt.classes.Circle;
+import de.uni_stuttgart.projektinf.tmt.classes.Layer;
 import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
 
 /**
@@ -22,7 +23,7 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
  */
 public class TMTActivity extends AppCompatActivity {
 
-    public static final int NUMBEROFCIRCLES = 8;
+    public static final int NUMBEROFCIRCLES = 25;
     public static int currentCircleNumber = 1;
     List<Circle> circleList = new ArrayList<Circle>();
     private TMTView tmtView;
@@ -43,13 +44,62 @@ public class TMTActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
-        // calculate positions of circles and send to View to draw:
-        calculateCirclePositions();
+        // calculate positions of circles using the DAC algorithm:
+        //calculateCirclePositionsDAC();
+
+        // calculate random positions of circles:
+        calculateRandomCirclePositions();
+
+        // send circles to View to draw:
         tmtView.setCircles(circleList);
     }
 
 
-    private void calculateCirclePositions(){
+
+    private void calculateCirclePositionsDAC(){
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getRealSize(size);
+        int screenWidth = size.x;
+        int screenHeight = size.y;
+
+        int sixthOfScreenWidth = screenWidth/6;
+        int sixthOfScreenHeight = screenHeight/6;
+        int centerX = screenWidth/2;
+        int centerY = screenHeight/2;
+
+        // create the layers:
+        Layer layer1 = new Layer(8,
+                                    centerX, centerX - sixthOfScreenWidth,
+                                    centerX, centerX + sixthOfScreenWidth,
+                                    centerY, centerY - sixthOfScreenHeight,
+                                    centerY, centerY + sixthOfScreenHeight);
+        Layer layer2 = new Layer(8,
+                                    centerX - sixthOfScreenWidth, centerX - 2*sixthOfScreenWidth,
+                                    centerX + sixthOfScreenWidth, centerX + 2*sixthOfScreenWidth,
+                                    centerY - sixthOfScreenHeight, centerY - 2*sixthOfScreenHeight,
+                                    centerY + sixthOfScreenHeight, centerY + 2*sixthOfScreenHeight);
+        Layer layer3 = new Layer(9,
+                                    centerX - 2*sixthOfScreenWidth, 0,
+                                    centerX + 2*sixthOfScreenWidth, screenWidth,
+                                    centerY - 2*sixthOfScreenHeight, 0,
+                                    centerY + 2*sixthOfScreenHeight, screenHeight);
+
+        // calculate random positions within the layers:
+        layer1.calculateRandomCirclePositionsInLayer();
+        layer2.calculateRandomCirclePositionsInLayer();
+        layer3.calculateRandomCirclePositionsInLayer();
+
+        // sort the positions using anchor point:
+        layer1.sortCircles();
+        layer2.sortCircles();
+        layer3.sortCircles();
+
+
+    }
+
+
+    private void calculateRandomCirclePositions(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getRealSize(size);

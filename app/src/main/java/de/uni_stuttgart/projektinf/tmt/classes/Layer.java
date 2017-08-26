@@ -1,5 +1,7 @@
 package de.uni_stuttgart.projektinf.tmt.classes;
 
+import android.graphics.Point;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +27,31 @@ public class Layer {
     private int endTop;
     private int endBottom;
 
-    public Layer (int n ){
-        this.numberOfCirclesInLayer = n;
+    // anchor point (for sorting):
+    private Point anchorPoint;
 
+    public Layer (int n, int bl, int el, int br, int er, int bt, int et, int bb, int eb ){
+        this.numberOfCirclesInLayer = n;
+        this.beginLeft = bl;
+        this.beginRight = br;
+        this.endLeft = el;
+        this.endRight = er;
+        this.beginTop = bt;
+        this.beginBottom = bb;
+        this.endTop = et;
+        this.endBottom = eb;
+
+        this.anchorPoint = new Point(el, eb);
 
     }
 
 
+    public void calculateRandomCirclePositionsInLayer() {
+
+    }
+
+
+    public void sortCircles() {
+
+    }
 }
