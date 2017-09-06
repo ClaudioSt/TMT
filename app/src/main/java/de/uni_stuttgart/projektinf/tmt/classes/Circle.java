@@ -48,6 +48,12 @@ public class Circle {
     public int getPosY(){
         return posY;
     }
+    public Point getPoint(){
+        return new Point(posX, posY);
+    }
+    public int getSequenceNumberGlobal(){
+        return sequenceNumberGlobal;
+    }
     public int getColor(){
         return color;
     }
@@ -62,17 +68,20 @@ public class Circle {
     }
     public void setTouched(){
         gotTouched = true;
-        color = Color.GREEN;
     }
     public boolean gotTouched(){
         return gotTouched;
     }
 
-    public void checkIfCorrect(Path drawPath) {
+    public void checkIfCorrect(TMTView view) {
+        // is it the correct one?
         if (TMTActivity.currentCircleNumber == sequenceNumberGlobal)
         {
             TMTActivity.currentCircleNumber++;
             setTouched();
+            color = Color.GREEN;
+            view.setPathStartingPoint(getPoint());
+
 
             // check if it is the last one:
             if (sequenceNumberGlobal == TMTActivity.NUMBEROFCIRCLES)
@@ -80,13 +89,14 @@ public class Circle {
                 TMTActivity.TMTCompleted();
             }
         }
+        // if NOT the correct one:
         else
         {
             // TODO: set red cross and jump back to last circle?
             color = Color.RED;
             TMTView.setWrongCircle(this);
             if (TMTView.DELETEWRONGPATH){
-                drawPath.reset();
+                view.resetDrawPath();
 
             }
 

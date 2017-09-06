@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uni_stuttgart.projektinf.tmt.R;
+import de.uni_stuttgart.projektinf.tmt.activities.TMTActivity;
 import de.uni_stuttgart.projektinf.tmt.classes.Circle;
 
 /**
@@ -100,8 +101,10 @@ public class TMTView extends AppCompatImageView{
                 pathStartingPoint = touchingPoint;
                 drawPath.moveTo(touchingPoint.x, touchingPoint.y);
                 // set last wrong circle (which was colored/crossed red) back to normal:
-                if (lastWrongCircle != null)
+                if (lastWrongCircle != null){
                     lastWrongCircle.setColor(Color.BLACK);
+                    lastWrongCircle = null;
+                }
 
                 break;
 
@@ -125,19 +128,24 @@ public class TMTView extends AppCompatImageView{
     }
 
     private void checkCircleTouch(Point touchingPoint) {
-        // go throw all circles to check if touched:
-        for(Circle circle : circleList) {
-            // only look at circles that have not been touched already:
-            if (!circle.gotTouched()) {
-                // calculate distance from circle to touching point:
-                int distance = circle.getDistanceToPoint(touchingPoint);
-                // check if distance is ok and really touched:
-                if (distance < Circle.RADIUS + Circle.TOLERANCE) {
-                    // if yes, look if it is the correct circle (respective order):
-                    circle.checkIfCorrect(drawPath);
-                    break;
+        // first check if beginning started at last correct circle:
+        if (pathStartsCorrect()){
+
+            // go throw all circles to check if touched:
+            for(Circle circle : circleList) {
+                // only look at circles that have not been touched already:
+                if (!circle.gotTouched()) {
+                    // calculate distance from circle to touching point:
+                    int distance = circle.getDistanceToPoint(touchingPoint);
+                    // check if distance is ok and user "really" touched circle:
+                    if (distance < Circle.RADIUS + Circle.TOLERANCE) {
+                        // if yes, look if it is the correct circle (respective order):
+                        circle.checkIfCorrect(this);
+                        break;
+                    }
                 }
             }
+
         }
 
     }
@@ -168,5 +176,39 @@ public class TMTView extends AppCompatImageView{
 
     public void setCircles(List<Circle> cl) {
         this.circleList = cl;
+    }
+
+    public Circle getLastCorrectCircle(){
+        if (TMTActivity.currentCircleNumber == 1)
+            return null;
+        else {
+            // go through all circles and compare the sequencenumber to check if last correct:
+            for (Circle circle : circleList) {
+                if (circle.getSequenceNumberGlobal() == TMTActivity.currentCircleNumber - 1)
+                    return circle;
+            }
+        }
+        return null;
+    }
+
+    private boolean pathStartsCorrect(){
+        Circle cl = getLastCorrectCircle();
+        if (cl == null)
+            return true;
+        else
+        {
+            int distance = cl.getDistanceToPoint(pathStartingPoint);
+            if (distance < Circle.RADIUS + Circle.TOLERANCE)
+                return true;
+            else
+                return false;
+        }
+    }
+
+    public void resetDrawPath(){
+        drawPath.reset();
+    }
+    public void setPathStartingPoint(Point newStartingPoint){
+        pathStartingPoint = newStartingPoint;
     }
 }
