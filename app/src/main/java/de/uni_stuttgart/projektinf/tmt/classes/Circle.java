@@ -1,8 +1,11 @@
 package de.uni_stuttgart.projektinf.tmt.classes;
 
 import android.graphics.Color;
+import android.graphics.Path;
+import android.graphics.Point;
 
 import de.uni_stuttgart.projektinf.tmt.activities.TMTActivity;
+import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
 
 /**
  * The Circle Class.
@@ -48,6 +51,9 @@ public class Circle {
     public int getColor(){
         return color;
     }
+    public void setColor(int c){
+        color = c;
+    }
     public void setContent(String content){
         this.content = content;
     }
@@ -62,7 +68,7 @@ public class Circle {
         return gotTouched;
     }
 
-    public void checkIfCorrect() {
+    public void checkIfCorrect(Path drawPath) {
         if (TMTActivity.currentCircleNumber == sequenceNumberGlobal)
         {
             TMTActivity.currentCircleNumber++;
@@ -76,10 +82,20 @@ public class Circle {
         }
         else
         {
-            // TODO: set red cross and jump back to last circle
+            // TODO: set red cross and jump back to last circle?
             color = Color.RED;
+            TMTView.setWrongCircle(this);
+            if (TMTView.DELETEWRONGPATH){
+                drawPath.reset();
+
+            }
+
         }
 
+
+    }
+    public int getDistanceToPoint(Point pt){
+        return (int) Math.sqrt((posX - pt.x) * (posX - pt.x) + (posY - pt.y) * (posY - pt.y));
 
     }
 }

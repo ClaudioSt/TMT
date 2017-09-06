@@ -8,7 +8,7 @@ package de.uni_stuttgart.projektinf.tmt.helper_classes;
 public class TMTCalc {
 
     // The time in seconds it takes to draw a line connecting all circles in the correct order:
-    private int timeToCompletion;
+    private long timeToCompletion;
     // The number of times a line is drawn to a circle in the incorrect order:
     private int numberOfErrors;
     // Total number of pauses that occurred during the test:
@@ -49,16 +49,30 @@ public class TMTCalc {
     // container for all the values:
     float[] tmtValues = new float[16];
 
-    public void startTime(){
 
+
+    public TMTCalc(){
+        this.numberOfErrors = 0;
+        this.numberOfPauses = 0;
+        this.numberOfLifts = 0;
     }
-    public void stopTime(){
 
+
+    public void startTMT(){
+        timeToCompletion = System.nanoTime();
+    }
+    public void finishTMT(){
+        timeToCompletion = System.nanoTime() - timeToCompletion;
     }
     public void incrementErrors(){
-
+        numberOfErrors++;
     }
-
+    public void incrementPauses(){
+        numberOfPauses++;
+    }
+    public void incrementLifts(){
+        numberOfLifts++;
+    }
 
 
     public float[] calcAllValues(){

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -23,6 +24,7 @@ import de.uni_stuttgart.projektinf.tmt.classes.Circle;
 
 public class TMTView extends AppCompatImageView{
 
+    public static final boolean DELETEWRONGPATH = false;
     //drawing path
     private Path drawPath;
     //defines what to draw
@@ -39,6 +41,12 @@ public class TMTView extends AppCompatImageView{
     private float currentBrushSize, lastBrushSize;
     // list of circles:
     List<Circle> circleList = new ArrayList<Circle>();
+    // last wrong circle (for coloring / red-crossing):
+    static Circle lastWrongCircle;
+    // the starting point of the current path:
+    private Point pathStartingPoint;
+    // the end point of the current path:
+    private Point pathEndPoint;
 
     public TMTView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -82,41 +90,51 @@ public class TMTView extends AppCompatImageView{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float touchX = event.getX();
-        float touchY = event.getY();
-        checkCircleTouch(touchX, touchY);
-        //respond to down, move and up events
+        Point touchingPoint = new Point((int)event.getX(), (int) event.getY());
+        checkCircleTouch(touchingPoint);
+
+        //respond to down, move and up events:
         switch (event.getAction()) {
+
             case MotionEvent.ACTION_DOWN:
-                drawPath.moveTo(touchX, touchY);
+                pathStartingPoint = touchingPoint;
+                drawPath.moveTo(touchingPoint.x, touchingPoint.y);
+                // set last wrong circle (which was colored/crossed red) back to normal:
+                if (lastWrongCircle != null)
+                    lastWrongCircle.setColor(Color.BLACK);
+
                 break;
+
             case MotionEvent.ACTION_MOVE:
-                drawPath.lineTo(touchX, touchY);
+                drawPath.lineTo(touchingPoint.x, touchingPoint.y);
                 break;
+
             case MotionEvent.ACTION_UP:
-                //drawPath.lineTo(touchX, touchY);
+                pathEndPoint = touchingPoint;
                 drawCanvas.drawPath(drawPath, drawPaint);
                 drawPath.reset();
                 break;
+
             default:
                 return false;
         }
-        //redraw
+
+        // redraw:
         invalidate();
         return true;
     }
 
-    private void checkCircleTouch(float touchX, float touchY) {
+    private void checkCircleTouch(Point touchingPoint) {
         // go throw all circles to check if touched:
         for(Circle circle : circleList) {
             // only look at circles that have not been touched already:
             if (!circle.gotTouched()) {
                 // calculate distance from circle to touching point:
-                int distance = (int) Math.sqrt((circle.getPosX() - touchX) * (circle.getPosX() - touchX) + (circle.getPosY() - touchY) * (circle.getPosY() - touchY));
+                int distance = circle.getDistanceToPoint(touchingPoint);
                 // check if distance is ok and really touched:
                 if (distance < Circle.RADIUS + Circle.TOLERANCE) {
                     // if yes, look if it is the correct circle (respective order):
-                    circle.checkIfCorrect();
+                    circle.checkIfCorrect(drawPath);
                     break;
                 }
             }
@@ -142,6 +160,10 @@ public class TMTView extends AppCompatImageView{
             paint.setTextSize(Circle.contentTextSize);
             canvas.drawText(circle.getContent(), circle.getPosX(), circle.getPosY(), paint);
         }
+    }
+
+    public static void setWrongCircle(Circle cl){
+        lastWrongCircle = cl;
     }
 
     public void setCircles(List<Circle> cl) {

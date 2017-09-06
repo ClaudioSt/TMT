@@ -14,6 +14,7 @@ import java.util.List;
 import de.uni_stuttgart.projektinf.tmt.R;
 import de.uni_stuttgart.projektinf.tmt.classes.Circle;
 import de.uni_stuttgart.projektinf.tmt.classes.Layer;
+import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTCalc;
 import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
 
 /**
@@ -23,11 +24,13 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
  */
 public class TMTActivity extends AppCompatActivity {
 
-    public static final int NUMBEROFCIRCLES = 25;
+    //public static final int NUMBEROFCIRCLES = 25;
+    public static final int NUMBEROFCIRCLES = 10;
     public static int currentCircleNumber = 1;
     List<Circle> circleList = new ArrayList<Circle>();
     private TMTView tmtView;
     private static Context thisContext;
+    private static TMTCalc TMTCalculator;
 
 
     @Override
@@ -44,6 +47,9 @@ public class TMTActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
+        // create helper object for the many calculations:
+        TMTCalculator = new TMTCalc();
+
         // calculate positions of circles using the DAC algorithm:
         //calculateCirclePositionsDAC();
 
@@ -52,6 +58,8 @@ public class TMTActivity extends AppCompatActivity {
 
         // send circles to View to draw:
         tmtView.setCircles(circleList);
+
+        TMTCalculator.startTMT();
     }
 
 
@@ -146,6 +154,8 @@ public class TMTActivity extends AppCompatActivity {
 
 
     public static void TMTCompleted() {
+        // stop timer:
+        TMTCalculator.finishTMT();
         // takes user to the next activity:
         Intent viewResultsIntent = new Intent(thisContext, ViewResultsActivity.class);
         thisContext.startActivity(viewResultsIntent);
