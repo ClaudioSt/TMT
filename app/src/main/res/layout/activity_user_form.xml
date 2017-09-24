@@ -35,7 +35,7 @@
                 android:layout_weight="0.25" />
 
             <RadioButton
-                android:id="@+id/radioButton1"
+                android:id="@+id/radioButtonGenderFemale"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Female"
@@ -43,7 +43,7 @@
                 android:layout_weight="0.25" />
 
             <RadioButton
-                android:id="@+id/radioButton2"
+                android:id="@+id/radioButtonGenderMale"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Male"
@@ -51,7 +51,7 @@
                 android:layout_weight="0.25" />
 
             <RadioButton
-                android:id="@+id/radioButton3"
+                android:id="@+id/radioButtonGenderOther"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Other"
@@ -100,7 +100,7 @@
                 android:textSize="32sp" />
 
             <RadioButton
-                android:id="@+id/radioButton7"
+                android:id="@+id/radioButtonSightGlasses"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -108,7 +108,7 @@
                 android:textSize="24sp" />
 
             <RadioButton
-                android:id="@+id/radioButton4"
+                android:id="@+id/radioButtonSightContacts"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -116,7 +116,7 @@
                 android:textSize="24sp" />
 
             <RadioButton
-                android:id="@+id/radioButton8"
+                android:id="@+id/radioButtonSightNone"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -140,19 +140,19 @@
                 android:textSize="32sp" />
 
             <RadioButton
-                android:id="@+id/radioButton5"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Right-Handed"
-                android:textSize="24sp" />
-
-            <RadioButton
-                android:id="@+id/radioButton6"
+                android:id="@+id/radioButtonHandLeft"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="Left-Handed"
+                android:textSize="24sp" />
+
+            <RadioButton
+                android:id="@+id/radioButtonHandRight"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Right-Handed"
                 android:textSize="24sp" />
 
         </RadioGroup>

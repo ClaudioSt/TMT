@@ -9,10 +9,10 @@ public class User {
     private int gender;
     private int age;
     private int sight;
-    private boolean rightHanded;
+    private int rightHanded;
 
 
-    public User (int gender, int age, int sight, boolean rightHanded){
+    public User (int gender, int age, int sight, int rightHanded){
         this.gender = gender;
         this.age = age;
         this.sight = sight;
