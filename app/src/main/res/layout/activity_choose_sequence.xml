@@ -28,7 +28,7 @@
             android:textSize="32sp" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/buttonNumberSequence"
             android:onClick="goToGoalChooser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:textSize="32sp" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/buttonLetterSequence"
             android:onClick="goToGoalChooser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
             android:textSize="32sp" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/buttonMixedSequence"
             android:onClick="goToGoalChooser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

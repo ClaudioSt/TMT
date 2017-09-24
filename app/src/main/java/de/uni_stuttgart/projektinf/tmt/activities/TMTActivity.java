@@ -142,7 +142,6 @@ public class TMTActivity extends AppCompatActivity {
                 if (distanceIsOk){
                     foundPos = true;
                     Circle newCircle = new Circle(randX, randY, (i+1));
-                    newCircle.setContent(""+(i+1));
                     circleList.add(newCircle);
                 }
 

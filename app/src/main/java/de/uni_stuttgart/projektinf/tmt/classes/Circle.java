@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Point;
 
+import de.uni_stuttgart.projektinf.tmt.activities.ChooseSequenceActivity;
 import de.uni_stuttgart.projektinf.tmt.activities.TMTActivity;
 import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
 
@@ -39,6 +40,7 @@ public class Circle {
         this.posX = x;
         this.posY = y;
         this.sequenceNumberGlobal = number;
+        setContent();
     }
 
 
@@ -60,9 +62,35 @@ public class Circle {
     public void setColor(int c){
         color = c;
     }
-    public void setContent(String content){
-        this.content = content;
+    /**
+     * Method setContent sets the (to the user visible) content of the circles. Depending on the
+     * chosen sequence order this varies.
+     */
+    public void setContent(){
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        char[] alphabetArray  = alphabet.toCharArray();
+
+         /*
+        ChooseSequenceActivity.sequence:
+        1 = 1,2,3,4,5,6,...
+        2 = A,B,C,D,E,F,...
+        3 = 1,A,2,B,3,C,...
+         */
+
+        switch (ChooseSequenceActivity.sequence){
+            case 1: this.content = "" + sequenceNumberGlobal;
+                    break;
+            case 2: this.content = String.valueOf(alphabetArray[sequenceNumberGlobal - 1]);
+                    break;
+            case 3: if (sequenceNumberGlobal % 2 == 0)
+                        this.content = String.valueOf(alphabetArray[sequenceNumberGlobal/2 - 1]);
+                    else
+                        this.content = "" + (int)Math.ceil(sequenceNumberGlobal / 2.0);
+                    break;
+
+        }
     }
+
     public String getContent(){
         return content;
     }

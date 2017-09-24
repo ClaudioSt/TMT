@@ -53,15 +53,9 @@ public class UserFormActivity extends AppCompatActivity {
      * @see de.uni_stuttgart.projektinf.tmt.classes.User
      */
     public void UserClickedOk(View view){
-        // get information and create User object with it:
-        // get selected radioButtons from radioGroups:
-        int selectedIdGender = radioGender.getCheckedRadioButtonId();
         int gender = 0;
-        int selectedIdSight = radioSight.getCheckedRadioButtonId();
         int sight = 0;
-        int selectedIdHand = radioHand.getCheckedRadioButtonId();
         int hand = 0;
-        String ageString = ageTxt.getText().toString();
 
         /*
         GENDER:
@@ -77,7 +71,7 @@ public class UserFormActivity extends AppCompatActivity {
         2 = right
          */
 
-        switch (selectedIdGender){
+        switch (radioGender.getCheckedRadioButtonId()){
             case R.id.radioButtonGenderFemale:  gender = 1;
                                                 break;
             case R.id.radioButtonGenderMale:    gender = 2;
@@ -85,7 +79,7 @@ public class UserFormActivity extends AppCompatActivity {
             case R.id.radioButtonGenderOther:   gender = 3;
                                                 break;
         }
-        switch (selectedIdSight){
+        switch (radioSight.getCheckedRadioButtonId()){
             case R.id.radioButtonSightGlasses:  sight = 1;
                                                 break;
             case R.id.radioButtonSightContacts: sight = 2;
@@ -93,13 +87,14 @@ public class UserFormActivity extends AppCompatActivity {
             case R.id.radioButtonSightNone: sight = 3;
                                             break;
         }
-        switch (selectedIdHand){
+        switch (radioHand.getCheckedRadioButtonId()){
             case R.id.radioButtonHandLeft:  hand = 1;
                                             break;
             case R.id.radioButtonHandRight: hand = 2;
                                             break;
         }
 
+        String ageString = ageTxt.getText().toString();
 
         // check if everything is filled out properly:
         if (gender == 0 || sight == 0 || hand == 0 || TextUtils.isEmpty(ageString)){
