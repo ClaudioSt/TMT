@@ -54,6 +54,9 @@ public class TMTView extends AppCompatImageView{
         init();
     }
 
+    /**
+     * Method init initializes the Paint needed for drawing onto the canvas
+     */
     private void init(){
         currentBrushSize = 10;
         lastBrushSize = currentBrushSize;
@@ -70,28 +73,47 @@ public class TMTView extends AppCompatImageView{
         canvasPaint = new Paint(Paint.DITHER_FLAG);
     }
 
+    /**
+     * Method onDraw is the overridden method of the AppCompatImageView.
+     * Here the circles, their content and the path is drawn.
+     *
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
+        // draw circles (and their content) on canvas:
         drawCircles(canvas);
+        // draw the bitmap (containing the paths) to the canvas:
         canvas.drawBitmap(canvasBitmap, 0 , 0, canvasPaint);
+        // draw the current path:
         canvas.drawPath(drawPath, drawPaint);
     }
+
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         //create canvas of certain device size.
         super.onSizeChanged(w, h, oldw, oldh);
 
-        //create Bitmap of certain w,h
+        //create Bitmap of certain width and height to store the paths:
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
         //apply bitmap to graphic to start drawing.
         drawCanvas = new Canvas(canvasBitmap);
     }
 
+    /**
+     * Method onTouchEvent is the overridden method of the AppCompatImageView.
+     * This method is called when the user touches the display.
+     * Depending on down, move or up action of the user, certain changes have to be made.
+     *
+     * @param event
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // get the point where the user touched the display:
         Point touchingPoint = new Point((int)event.getX(), (int) event.getY());
+        // check this point for correct user action (user connected two correct circles):
         checkCircleTouch(touchingPoint);
 
         //respond to down, move and up events:
@@ -127,18 +149,22 @@ public class TMTView extends AppCompatImageView{
         return true;
     }
 
+    /**
+     * Method checkCircleTouch is always called in onTouchEvent() to check if the user performed a
+     * correct action by connecting two circles in the proper order.
+     *
+     * @param touchingPoint
+     */
     private void checkCircleTouch(Point touchingPoint) {
         // first check if beginning started at last correct circle:
         if (pathStartsCorrect()){
 
-            // go throw all circles to check if touched:
+            // go throw all circles to find the one that really got touched by the user:
             for(Circle circle : circleList) {
                 // only look at circles that have not been touched already:
                 if (!circle.gotTouched()) {
-                    // calculate distance from circle to touching point:
-                    int distance = circle.getDistanceToPoint(touchingPoint);
-                    // check if distance is ok and user "really" touched circle:
-                    if (distance < Circle.RADIUS + Circle.TOLERANCE) {
+                    // check if user "really" touched circle:
+                    if (circle.isInsideTheCircle(touchingPoint)) {
                         // if yes, look if it is the correct circle (respective order):
                         circle.checkIfCorrect(this);
                         break;
@@ -208,6 +234,7 @@ public class TMTView extends AppCompatImageView{
     public void resetDrawPath(){
         drawPath.reset();
     }
+
     public void setPathStartingPoint(Point newStartingPoint){
         pathStartingPoint = newStartingPoint;
     }

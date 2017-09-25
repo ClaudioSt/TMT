@@ -43,6 +43,34 @@ public class Circle {
         setContent();
     }
 
+    /**
+     * Method setContent sets the (to the user visible) content of the circles. Depending on the
+     * chosen sequence order this varies.
+     */
+    private void setContent(){
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        char[] alphabetArray  = alphabet.toCharArray();
+
+         /*
+        ChooseSequenceActivity.sequence:
+        1 = 1,2,3,4,5,6,...
+        2 = A,B,C,D,E,F,...
+        3 = 1,A,2,B,3,C,...
+         */
+
+        switch (ChooseSequenceActivity.sequence){
+            case 1: this.content = "" + sequenceNumberGlobal;
+                break;
+            case 2: this.content = String.valueOf(alphabetArray[sequenceNumberGlobal - 1]);
+                break;
+            case 3: if (sequenceNumberGlobal % 2 == 0)
+                this.content = String.valueOf(alphabetArray[sequenceNumberGlobal/2 - 1]);
+            else
+                this.content = "" + (int)Math.ceil(sequenceNumberGlobal / 2.0);
+                break;
+
+        }
+    }
 
     public int getPosX(){
         return posX;
@@ -62,35 +90,6 @@ public class Circle {
     public void setColor(int c){
         color = c;
     }
-    /**
-     * Method setContent sets the (to the user visible) content of the circles. Depending on the
-     * chosen sequence order this varies.
-     */
-    public void setContent(){
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        char[] alphabetArray  = alphabet.toCharArray();
-
-         /*
-        ChooseSequenceActivity.sequence:
-        1 = 1,2,3,4,5,6,...
-        2 = A,B,C,D,E,F,...
-        3 = 1,A,2,B,3,C,...
-         */
-
-        switch (ChooseSequenceActivity.sequence){
-            case 1: this.content = "" + sequenceNumberGlobal;
-                    break;
-            case 2: this.content = String.valueOf(alphabetArray[sequenceNumberGlobal - 1]);
-                    break;
-            case 3: if (sequenceNumberGlobal % 2 == 0)
-                        this.content = String.valueOf(alphabetArray[sequenceNumberGlobal/2 - 1]);
-                    else
-                        this.content = "" + (int)Math.ceil(sequenceNumberGlobal / 2.0);
-                    break;
-
-        }
-    }
-
     public String getContent(){
         return content;
     }
@@ -101,8 +100,33 @@ public class Circle {
         return gotTouched;
     }
 
+    /**
+     * Method isInsideTheCircle checks if a given point lays within this circle (or within the
+     * tolerance).
+     *
+     * @param point
+     */
+    public boolean isInsideTheCircle(Point point){
+        // calculate distance from circle center to point:
+        int distance = getDistanceToPoint(point);
+        // check if distance is ok and point is "really" inside the circle:
+        if (distance < RADIUS + TOLERANCE)
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Method checkIfCorrect is called in checkCircleTouch() in the TMTView class.
+     * It tests if this circle is the correct circle in the sequence by comparing the circles
+     * sequence number with the number of the current needed circle. According to the test
+     * result appropriate measures are performed.
+     *
+     * @param view
+     * @see TMTView
+     */
     public void checkIfCorrect(TMTView view) {
-        // is it the correct one?
+        // is it the correct one regarding the sequence?
         if (TMTActivity.currentCircleNumber == sequenceNumberGlobal)
         {
             TMTActivity.currentCircleNumber++;
@@ -127,11 +151,15 @@ public class Circle {
                 view.resetDrawPath();
 
             }
-
         }
-
-
     }
+
+    /**
+     * Method getDistanceToPoint returns the euclid distance from the center of this circle to the
+     * given point.
+     *
+     * @param pt
+     */
     public int getDistanceToPoint(Point pt){
         return (int) Math.sqrt((posX - pt.x) * (posX - pt.x) + (posY - pt.y) * (posY - pt.y));
 
