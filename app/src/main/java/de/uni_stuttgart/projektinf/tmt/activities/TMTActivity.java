@@ -83,6 +83,9 @@ public class TMTActivity extends AppCompatActivity {
 
         // ------------ DIVIDE PHASE: --------------------------------------------------------------
 
+        final int NUMBEROFLAYERS = 3;
+        List<Layer> layerList = new ArrayList<Layer>();
+
         int sixthOfScreenWidth = screenWidth/6;
         int sixthOfScreenHeight = screenHeight/6;
         int centerX = screenWidth/2;
@@ -94,32 +97,42 @@ public class TMTActivity extends AppCompatActivity {
                                     centerX, centerX + sixthOfScreenWidth,
                                     centerY, centerY - sixthOfScreenHeight,
                                     centerY, centerY + sixthOfScreenHeight);
+        layerList.add(layer1);
         Layer layer2 = new Layer(8,
                                     centerX - sixthOfScreenWidth, centerX - 2*sixthOfScreenWidth,
                                     centerX + sixthOfScreenWidth, centerX + 2*sixthOfScreenWidth,
                                     centerY - sixthOfScreenHeight, centerY - 2*sixthOfScreenHeight,
                                     centerY + sixthOfScreenHeight, centerY + 2*sixthOfScreenHeight);
+        layerList.add(layer2);
         Layer layer3 = new Layer(9,
                                     centerX - 2*sixthOfScreenWidth, 0,
                                     centerX + 2*sixthOfScreenWidth, screenWidth,
                                     centerY - 2*sixthOfScreenHeight, 0,
                                     centerY + 2*sixthOfScreenHeight, screenHeight);
+        layerList.add(layer3);
 
-        // calculate random positions within the layers:
-        layer1.calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
-        layer2.calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
-        layer3.calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
 
-        // sort the positions using anchor point:
-        layer1.sortCircles();
-        layer2.sortCircles();
-        layer3.sortCircles();
+        for (int i = 1; i <= NUMBEROFLAYERS; i++){
+            // calculate random positions within the layers:
+            layerList.get(i).calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
+            // sort the positions using anchor point:
+            layerList.get(i).sortCircles();
+        }
 
 
         // ------------ COMBINE PHASE: -------------------------------------------------------------
 
+        for (int i = NUMBEROFLAYERS; i > 1; i--){
+            while (testLayersIntersect(layerList.get(i), layerList.get(i-1))){
+
+            }
+
+        }
 
 
+    }
+
+    private boolean testLayersIntersect(Layer layer1, Layer layer2) {
 
     }
 
