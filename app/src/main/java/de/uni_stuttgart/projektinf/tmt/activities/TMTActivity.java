@@ -71,6 +71,8 @@ public class TMTActivity extends AppCompatActivity {
         int screenWidth = size.x;
         int screenHeight = size.y;
 
+        // ------------ DIVIDE PHASE: --------------------------------------------------------------
+
         int sixthOfScreenWidth = screenWidth/6;
         int sixthOfScreenHeight = screenHeight/6;
         int centerX = screenWidth/2;
@@ -94,14 +96,16 @@ public class TMTActivity extends AppCompatActivity {
                                     centerY + 2*sixthOfScreenHeight, screenHeight);
 
         // calculate random positions within the layers:
-        layer1.calculateRandomCirclePositionsInLayer();
-        layer2.calculateRandomCirclePositionsInLayer();
-        layer3.calculateRandomCirclePositionsInLayer();
+        layer1.calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
+        layer2.calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
+        layer3.calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
 
         // sort the positions using anchor point:
         layer1.sortCircles();
         layer2.sortCircles();
         layer3.sortCircles();
+
+        
 
 
     }
@@ -125,15 +129,14 @@ public class TMTActivity extends AppCompatActivity {
             while (!foundPos)
             {
                 randX = (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ) + Circle.RADIUS;
-
                 randY = (int)( Math.random() * (screenHeight - 2*Circle.RADIUS) ) + Circle.RADIUS;
+                Point randomPoint = new Point(randX, randY);
 
 
-                //test if position is far away enough from others (euklidischer Abstand):
+                //test if position is far away enough from others (via euclid distance):
                 boolean distanceIsOk = true;
                 for(Circle otherCircle : circleList) {
-                    int distance = (int) Math.sqrt( (otherCircle.getPosX() - randX)*(otherCircle.getPosX()- randX) + (otherCircle.getPosY() - randY)*(otherCircle.getPosY() - randY) );
-                    if (distance < 4*Circle.RADIUS){
+                    if (otherCircle.getDistanceToPoint(randomPoint) < 4*Circle.RADIUS){
                         distanceIsOk = false;
                         break;
                     }
@@ -142,6 +145,7 @@ public class TMTActivity extends AppCompatActivity {
                 if (distanceIsOk){
                     foundPos = true;
                     Circle newCircle = new Circle(randX, randY, (i+1));
+                    newCircle.sequenceNumberGlobal = (i+1);
                     circleList.add(newCircle);
                 }
 

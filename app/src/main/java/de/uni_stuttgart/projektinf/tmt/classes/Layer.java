@@ -1,8 +1,10 @@
 package de.uni_stuttgart.projektinf.tmt.classes;
 
 import android.graphics.Point;
+import android.view.Display;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,8 +29,9 @@ public class Layer {
     private int endTop;
     private int endBottom;
 
-    // anchor point (for sorting):
+    // anchor point of this layer (for sorting):
     private Point anchorPoint;
+
 
     public Layer (int n, int bl, int el, int br, int er, int bt, int et, int bb, int eb ){
         this.numberOfCirclesInLayer = n;
@@ -41,17 +44,95 @@ public class Layer {
         this.endTop = et;
         this.endBottom = eb;
 
-        this.anchorPoint = new Point(el, eb);
+        // take bottom left point as anchor point (as suggested in the paper):
+        this.anchorPoint = new Point(bl, eb);
 
     }
 
 
-    public void calculateRandomCirclePositionsInLayer() {
+    public void calculateRandomCirclePositionsInLayer(int screenWidth, int screenHeight) {
+        // iterate to find number of random circles needed:
+        for (int i = 0; i < numberOfCirclesInLayer; i++){
 
+            // find a random position that fulfills the criteria:
+            boolean foundPos = false;
+            while (!foundPos)
+            {
+                // at first take random position on the screen:
+                int randX = (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ) + Circle.RADIUS;
+                int randY = (int)( Math.random() * (screenHeight - 2*Circle.RADIUS) ) + Circle.RADIUS;
+                Point randomPoint = new Point(randX, randY);
+
+                // then check if this position is even in the layer:
+                boolean isInLayer = testIfInLayer(randomPoint);
+
+                //test if position is far away enough from others (via euclid distance):
+                boolean distanceIsOk = true;
+                for(Circle otherCircle : circleListLayer) {
+                    if (otherCircle.getDistanceToPoint(randomPoint) < 3*Circle.RADIUS){
+                        distanceIsOk = false;
+                        break;
+                    }
+                }
+
+                if (isInLayer & distanceIsOk){
+                    foundPos = true;
+                    Circle newCircle = new Circle(randomPoint, (i+1));
+                    circleListLayer.add(newCircle);
+                }
+
+            }
+        }
     }
 
 
     public void sortCircles() {
+        // first set in which direction to sort:
+        boolean sortClockwise = false;
 
+        // calculate angle of every circle in this layer relative to the anchor point:
+        for(Circle circle: circleListLayer) {
+            float angle = (float) Math.toDegrees(Math.atan2(circle.getPosY() - anchorPoint.y,
+                                                            circle.getPosX() - anchorPoint.x));
+            if(angle < 0)
+                angle += 360;
+
+            circle.angleRelativeToAnchor = (int) angle;
+        }
+
+        // sort the layer circle list by angle:
+        if (sortClockwise)
+            Collections.sort(circleListLayer, (Circle c1, Circle c2) -> c1.angleRelativeToAnchor - c2.angleRelativeToAnchor);
+        else
+            Collections.sort(circleListLayer, (Circle c1, Circle c2) -> c2.angleRelativeToAnchor - c1.angleRelativeToAnchor);
+
+        // set the layer sequence number for all circles in the layer:
+        for(int i = 0; i < circleListLayer.size(); i++) {
+            circleListLayer.get(i).sequenceNumberLayer = i;
+        }
     }
+
+    public boolean testIfInLayer(Point point){
+        boolean isInLayer = true;
+
+        if (point.x < beginLeft)
+            isInLayer = false;
+        else if (point.x > endLeft)
+            isInLayer = false;
+        else if (point.x < beginRight)
+            isInLayer = false;
+        else if (point.x > endRight)
+            isInLayer = false;
+        else if (point.y < beginTop)
+            isInLayer = false;
+        else if (point.y > endTop)
+            isInLayer = false;
+        else if (point.y < beginBottom)
+            isInLayer = false;
+        else if (point.y > endBottom)
+            isInLayer = false;
+
+        return isInLayer;
+    }
+
 }

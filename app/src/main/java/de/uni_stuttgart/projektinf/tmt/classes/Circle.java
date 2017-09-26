@@ -32,14 +32,24 @@ public class Circle {
     private String content;
     // already touched by user?
     private boolean gotTouched = false;
-    // the sequence number of the corresponding order:
-    private int sequenceNumberGlobal;
-    private int sequenceNumberLayer;
+    // the angle relative to the layer anchor point:
+    int angleRelativeToAnchor;
+    // the sequence numbers:
+    private int sequenceNumberWhenCreated;
+    public int sequenceNumberGlobal;
+    int sequenceNumberLayer;
+
 
     public Circle(int x, int y, int number){
         this.posX = x;
         this.posY = y;
-        this.sequenceNumberGlobal = number;
+        this.sequenceNumberWhenCreated = number;
+        setContent();
+    }
+    public Circle(Point pt, int number){
+        this.posX = pt.x;
+        this.posY = pt.y;
+        this.sequenceNumberWhenCreated = number;
         setContent();
     }
 
