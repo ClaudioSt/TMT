@@ -147,4 +147,8 @@ public class Layer {
         return isInLayer;
     }
 
+    public List<Circle> getLayerCircleList(){
+        return circleListLayer;
+    }
+
 }

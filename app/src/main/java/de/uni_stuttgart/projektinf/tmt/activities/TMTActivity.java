@@ -2,7 +2,9 @@ package de.uni_stuttgart.projektinf.tmt.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
@@ -123,7 +125,7 @@ public class TMTActivity extends AppCompatActivity {
         // ------------ COMBINE PHASE: -------------------------------------------------------------
 
         for (int i = NUMBEROFLAYERS; i > 1; i--){
-            while (testLayersIntersect(layerList.get(i), layerList.get(i-1))){
+            while ( ! testLayersIntersect(layerList.get(i), layerList.get(i-1)).isEmpty() ){
 
             }
 
@@ -132,7 +134,39 @@ public class TMTActivity extends AppCompatActivity {
 
     }
 
-    private boolean testLayersIntersect(Layer layer1, Layer layer2) {
+    private List<Circle> testLayersIntersect(Layer layer1, Layer layer2) {
+        // go through all segments of the layer path:
+        for (int i = 0; i < layer1.getLayerCircleList().size() - 1; i++){
+            Circle c1 = layer1.getLayerCircleList().get(i);
+            Circle c2 = layer1.getLayerCircleList().get(i+1);
+            // bounding box of segment between c1 and c2 :
+            Rect r1 = new Rect( Math.min(c1.getPosX(), c2.getPosX()),
+                                Math.min(c1.getPosY(), c2.getPosY()),
+                                Math.max(c1.getPosX(), c2.getPosX()),
+                                Math.max(c1.getPosY(), c2.getPosY()));
+            // test this segment with all other segments of layer2:
+            for (int j = 0; j < layer2.getLayerCircleList().size() - 1; j++){
+                Circle circ1 = layer1.getLayerCircleList().get(i);
+                Circle circ2 = layer1.getLayerCircleList().get(i+1);
+                // bounding box of segment between circ1 and circ2:
+                Rect r2 = new Rect( Math.min(circ1.getPosX(), circ2.getPosX()),
+                                    Math.min(circ1.getPosY(), circ2.getPosY()),
+                                    Math.max(circ1.getPosX(), circ2.getPosX()),
+                                    Math.max(circ1.getPosY(), circ2.getPosY()));
+                // first test if the boxes intersect:
+
+                //TODO: oder das: if (Rect.intersects(r1, r2))?
+                if (r2.intersect(r1)){
+                    // test if the lines really intersect:
+
+
+
+                    break;
+                }
+
+            }
+
+        }
 
     }
 
