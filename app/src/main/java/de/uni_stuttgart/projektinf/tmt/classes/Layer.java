@@ -49,7 +49,11 @@ public class Layer {
 
     }
 
-
+    /**
+     * Method calculateRandomCirclePositionsInLayer generates random circles that lay within the
+     * layer and are not too close to one another.
+     *
+     */
     public void calculateRandomCirclePositionsInLayer(int screenWidth, int screenHeight) {
         // iterate to find number of random circles needed:
         for (int i = 0; i < numberOfCirclesInLayer; i++){
@@ -85,7 +89,10 @@ public class Layer {
         }
     }
 
-
+    /**
+     * Method sortCircles sorts the circles of this layer by angle relative to the anchor point and
+     * assigns them the corresponding sequence number within the layer.
+     */
     public void sortCircles() {
         // first set in which direction to sort:
         boolean sortClockwise = false;
@@ -112,6 +119,11 @@ public class Layer {
         }
     }
 
+    /**
+     * Method testIfInLayer tests if a given point lays within the boundaries of the layer.
+     *
+     * @param point
+     */
     public boolean testIfInLayer(Point point){
         boolean isInLayer = true;
 

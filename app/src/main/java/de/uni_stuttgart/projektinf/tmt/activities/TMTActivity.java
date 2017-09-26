@@ -63,13 +63,23 @@ public class TMTActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * Method calculateCirclePositionsDAC uses the DAC-algorithm introduced in the paper by Zeng et
+     * al to generate the circles and their global sequence.
+     * It uses a divide-and-combine approach to first create circles in some regions of the display
+     * called layers (with an intern layer sequence). It then combines these intern layer sequences
+     * to create a global circle sequence, which the TMT algorithm then uses.
+     *
+     * @see Circle
+     * @see Layer
+     */
     private void calculateCirclePositionsDAC(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getRealSize(size);
         int screenWidth = size.x;
         int screenHeight = size.y;
+
 
         // ------------ DIVIDE PHASE: --------------------------------------------------------------
 
@@ -105,12 +115,22 @@ public class TMTActivity extends AppCompatActivity {
         layer2.sortCircles();
         layer3.sortCircles();
 
-        
+
+        // ------------ COMBINE PHASE: -------------------------------------------------------------
+
+
 
 
     }
 
 
+    /**
+     * Method calculateRandomCirclePositions generates the circles and their global sequence.
+     * It simply generates random circles and takes their "creation sequence" as the global
+     * sequence to use in the TMT algorithm.
+     * (This leads to intersections and was only used as a simplified way for testing purposes!)
+     *
+     */
     private void calculateRandomCirclePositions(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
