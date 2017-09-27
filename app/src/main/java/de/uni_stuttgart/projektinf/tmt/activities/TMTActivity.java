@@ -11,6 +11,7 @@ import android.view.Display;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.uni_stuttgart.projektinf.tmt.R;
@@ -125,8 +126,16 @@ public class TMTActivity extends AppCompatActivity {
         // ------------ COMBINE PHASE: -------------------------------------------------------------
 
         for (int i = NUMBEROFLAYERS; i > 1; i--){
-            while ( ! testLayersIntersect(layerList.get(i), layerList.get(i-1)).isEmpty() ){
+            // test for intersections:
+            List<Circle> intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
+            // as long as there are intersections, fix these and check again:
+            while ( ! intersectionCircles.isEmpty() ){
 
+
+
+
+                // after the fixings, check again if there are any other intersections:
+                intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
             }
 
         }
@@ -139,7 +148,7 @@ public class TMTActivity extends AppCompatActivity {
         for (int i = 0; i < layer1.getLayerCircleList().size() - 1; i++){
             Circle c1 = layer1.getLayerCircleList().get(i);
             Circle c2 = layer1.getLayerCircleList().get(i+1);
-            // bounding box of segment between c1 and c2 :
+            // bounding box of segment between c1 and c2 for pre-test:
             Rect r1 = new Rect( Math.min(c1.getPosX(), c2.getPosX()),
                                 Math.min(c1.getPosY(), c2.getPosY()),
                                 Math.max(c1.getPosX(), c2.getPosX()),
@@ -148,26 +157,35 @@ public class TMTActivity extends AppCompatActivity {
             for (int j = 0; j < layer2.getLayerCircleList().size() - 1; j++){
                 Circle circ1 = layer1.getLayerCircleList().get(i);
                 Circle circ2 = layer1.getLayerCircleList().get(i+1);
-                // bounding box of segment between circ1 and circ2:
+                // bounding box of segment between circ1 and circ2 for pre-test:
                 Rect r2 = new Rect( Math.min(circ1.getPosX(), circ2.getPosX()),
                                     Math.min(circ1.getPosY(), circ2.getPosY()),
                                     Math.max(circ1.getPosX(), circ2.getPosX()),
                                     Math.max(circ1.getPosY(), circ2.getPosY()));
-                // first test if the boxes intersect:
 
-                //TODO: oder das: if (Rect.intersects(r1, r2))?
-                if (r2.intersect(r1)){
-                    // test if the lines really intersect:
-
-
-
-                    break;
+                // first do a pre-test if the bounding boxes intersect:
+                if (Rect.intersects(r1, r2)){
+                    // if yes, there is a possibility the segments intersect...
+                    // therefore do a mathematical exact test:
+                    float slope1 = (c1.getPosY() - c2.getPosY()) / (c1.getPosX() - c2.getPosX());
+                    float slope2 = (circ1.getPosY() - circ2.getPosY()) / (circ1.getPosX() - circ2.getPosX());
+                    float yInt1 = c1.getPosY() - slope1 * c1.getPosX();
+                    float yInt2 = circ1.getPosY() - slope2 * circ1.getPosX();
+                    // intersection point via formula:
+                    int intX = (int) ((yInt2 - yInt1) / (slope1 - slope2));
+                    // test if intersection point is within both segments:
+                    if ( Math.min(c1.getPosX(), c2.getPosX()) <= intX )
+                        if ( intX <= Math.max(c1.getPosX(), c2.getPosX()) )
+                            if ( Math.min(circ1.getPosX(), circ2.getPosX()) <= intX )
+                                if ( intX <= Math.max(circ1.getPosX(), circ2.getPosX()) )
+                                    // intersection happens, return the corresponding circles:
+                                    return ( new ArrayList<Circle>(Arrays.asList(c1,c2)) );
                 }
 
             }
 
         }
-
+        return null;
     }
 
 
