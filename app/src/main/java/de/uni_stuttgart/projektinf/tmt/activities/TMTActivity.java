@@ -142,58 +142,98 @@ public class TMTActivity extends AppCompatActivity {
                 intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
             }
         }
-        
-        // now find the pivot circles and connect the layer paths:
+
+        // now find the pivot circles in the layers and connect the layer paths:
         for (int i = NUMBEROFLAYERS; i > 1; i--){
+            // get the last circle of the inner layer:
+            List<Circle> innerLayerList = layerList.get(i-1).getLayerCircleList();
+            int last = innerLayerList.size() - 1;
+            Circle lastInInnerLayer = innerLayerList.get(last);
+
+            List<Circle> outerLayerList = layerList.get(i).getLayerCircleList();
+
+            // get the pivot circle in outer layer:
+            Circle pivotCircle = findPivotCircle(lastInInnerLayer, innerLayerList, outerLayerList);
+
+            // connect inner and outer layer via pivot circle:
+
 
         }
 
 
     }
 
+    private Circle findPivotCircle(Circle lastInInnerLayer, List<Circle> innerLayerList, List<Circle> outerLayerList) {
+        // find pivot circle by testing for intersections:
+        testPivotLoop:
+        for(Circle testPivot : outerLayerList) {
+            // first test against the segments in outer layer:
+            for (int j = 0; j < outerLayerList.size() - 1; j++) {
+                Circle c1 = outerLayerList.get(j);
+                Circle c2 = outerLayerList.get(j + 1);
+                List<Circle> testResult = testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2);
+                if (!testResult.isEmpty())
+                    continue testPivotLoop;
+            }
+            // then test against the segments in inner layer:
+            for (int j = 0; j < innerLayerList.size() - 1; j++) {
+                Circle c1 = outerLayerList.get(j);
+                Circle c2 = outerLayerList.get(j + 1);
+                List<Circle> testResult = testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2);
+                if (!testResult.isEmpty())
+                    continue testPivotLoop;
+            }
+            return testPivot;
+        }
+        return null;
+    }
+
     private List<Circle> testLayersIntersect(Layer layer1, Layer layer2) {
+        List<Circle> testResult = new ArrayList<Circle>();
         // go through all segments of the layer path:
         for (int i = 0; i < layer1.getLayerCircleList().size() - 1; i++){
             Circle c1 = layer1.getLayerCircleList().get(i);
             Circle c2 = layer1.getLayerCircleList().get(i+1);
-            // bounding box of segment between c1 and c2 for pre-test:
-            Rect r1 = new Rect( Math.min(c1.getPosX(), c2.getPosX()),
-                                Math.min(c1.getPosY(), c2.getPosY()),
-                                Math.max(c1.getPosX(), c2.getPosX()),
-                                Math.max(c1.getPosY(), c2.getPosY()));
             // test this segment with all other segments of layer2:
             for (int j = 0; j < layer2.getLayerCircleList().size() - 1; j++){
                 Circle circ1 = layer1.getLayerCircleList().get(i);
                 Circle circ2 = layer1.getLayerCircleList().get(i+1);
-                // bounding box of segment between circ1 and circ2 for pre-test:
-                Rect r2 = new Rect( Math.min(circ1.getPosX(), circ2.getPosX()),
-                                    Math.min(circ1.getPosY(), circ2.getPosY()),
-                                    Math.max(circ1.getPosX(), circ2.getPosX()),
-                                    Math.max(circ1.getPosY(), circ2.getPosY()));
-
-                // first do a pre-test if the bounding boxes intersect:
-                if (Rect.intersects(r1, r2)){
-                    // if yes, there is a possibility the segments intersect...
-                    // therefore do a mathematical exact test:
-                    float slope1 = (c1.getPosY() - c2.getPosY()) / (c1.getPosX() - c2.getPosX());
-                    float slope2 = (circ1.getPosY() - circ2.getPosY()) / (circ1.getPosX() - circ2.getPosX());
-                    float yInt1 = c1.getPosY() - slope1 * c1.getPosX();
-                    float yInt2 = circ1.getPosY() - slope2 * circ1.getPosX();
-                    // intersection point via formula:
-                    int intX = (int) ((yInt2 - yInt1) / (slope1 - slope2));
-                    // test if intersection point is within both segments:
-                    if ( Math.min(c1.getPosX(), c2.getPosX()) <= intX )
-                        if ( intX <= Math.max(c1.getPosX(), c2.getPosX()) )
-                            if ( Math.min(circ1.getPosX(), circ2.getPosX()) <= intX )
-                                if ( intX <= Math.max(circ1.getPosX(), circ2.getPosX()) )
-                                    // intersection happens, return the corresponding circles:
-                                    return ( new ArrayList<Circle>(Arrays.asList(c1,c2)) );
-                }
-
+                testResult = testSegmentsIntersect(c1, c2, circ1, circ2);
+                if ( !testResult.isEmpty() )
+                    return testResult;
             }
-
         }
-        return null;
+        // otherwise return the empty list:
+        return testResult;
+    }
+
+    private List<Circle> testSegmentsIntersect(Circle c1, Circle c2, Circle circ1, Circle circ2){
+        List<Circle> testResult = new ArrayList<Circle>();
+        // bounding box of segment between c1 and c2 for pre-test:
+        Rect r1 = getBoundingBox(c1, c2);
+        // bounding box of segment between circ1 and circ2 for pre-test:
+        Rect r2 = getBoundingBox(circ1, circ2);
+
+        // first do a pre-test if the bounding boxes intersect:
+        if (Rect.intersects(r1, r2)){
+            // if yes, there is a possibility the segments intersect...
+            // therefore do a mathematical exact test:
+            float slope1 = (c1.getPosY() - c2.getPosY()) / (c1.getPosX() - c2.getPosX());
+            float slope2 = (circ1.getPosY() - circ2.getPosY()) / (circ1.getPosX() - circ2.getPosX());
+            float yInt1 = c1.getPosY() - slope1 * c1.getPosX();
+            float yInt2 = circ1.getPosY() - slope2 * circ1.getPosX();
+            // intersection point via formula:
+            int intX = (int) ((yInt2 - yInt1) / (slope1 - slope2));
+            // test if intersection point is within both segments:
+            if ( Math.min(c1.getPosX(), c2.getPosX()) <= intX )
+                if ( intX <= Math.max(c1.getPosX(), c2.getPosX()) )
+                    if ( Math.min(circ1.getPosX(), circ2.getPosX()) <= intX )
+                        if ( intX <= Math.max(circ1.getPosX(), circ2.getPosX()) )
+                            // intersection happens, return the corresponding circles:
+                            return ( new ArrayList<Circle>(Arrays.asList(c1,c2)) );
+        }
+        // otherwise return the empty list:
+        return testResult;
     }
 
 
@@ -248,6 +288,12 @@ public class TMTActivity extends AppCompatActivity {
 
     }
 
+    private Rect getBoundingBox(Circle c1, Circle c2){
+        return new Rect(    Math.min(c1.getPosX(), c2.getPosX()),
+                            Math.min(c1.getPosY(), c2.getPosY()),
+                            Math.max(c1.getPosX(), c2.getPosX()),
+                            Math.max(c1.getPosY(), c2.getPosY())    );
+    }
 
     public static void TMTCompleted() {
         // stop timer:

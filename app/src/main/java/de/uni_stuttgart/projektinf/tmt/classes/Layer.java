@@ -100,7 +100,7 @@ public class Layer {
      */
     public void sortCircles() {
         // first set in which direction to sort:
-        boolean sortClockwise = false;
+        final boolean SORTCLOCKWISE = false;
 
         // calculate angle of every circle in this layer relative to the anchor point:
         for(Circle circle: circleListLayer) {
@@ -113,14 +113,14 @@ public class Layer {
         }
 
         // sort the layer circle list by angle:
-        if (sortClockwise)
+        if (SORTCLOCKWISE)
             Collections.sort(circleListLayer, (Circle c1, Circle c2) -> c1.angleRelativeToAnchor - c2.angleRelativeToAnchor);
         else
             Collections.sort(circleListLayer, (Circle c1, Circle c2) -> c2.angleRelativeToAnchor - c1.angleRelativeToAnchor);
 
         // set the layer sequence number for all circles in the layer:
         for(int i = 0; i < circleListLayer.size(); i++) {
-            circleListLayer.get(i).sequenceNumberLayer = i;
+            circleListLayer.get(i).sequenceNumberLayer = i+1;
         }
     }
 
