@@ -50,44 +50,49 @@ public class Layer {
     }
 
     /**
-     * Method calculateRandomCirclePositionsInLayer generates random circles that lay within the
+     * Method calculateAllRandomCirclesInLayer generates random circles that lay within the
      * layer and are not too close to one another.
      *
      */
-    public void calculateRandomCirclePositionsInLayer(int screenWidth, int screenHeight) {
+    public void calculateAllRandomCirclesInLayer(int screenWidth, int screenHeight) {
         // iterate to find number of random circles needed:
         for (int i = 0; i < numberOfCirclesInLayer; i++){
-
-            // find a random position that fulfills the criteria:
-            boolean foundPos = false;
-            while (!foundPos)
-            {
-                // at first take random position on the screen:
-                int randX = (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ) + Circle.RADIUS;
-                int randY = (int)( Math.random() * (screenHeight - 2*Circle.RADIUS) ) + Circle.RADIUS;
-                Point randomPoint = new Point(randX, randY);
-
-                // then check if this position is even in the layer:
-                boolean isInLayer = testIfInLayer(randomPoint);
-
-                //test if position is far away enough from others (via euclid distance):
-                boolean distanceIsOk = true;
-                for(Circle otherCircle : circleListLayer) {
-                    if (otherCircle.getDistanceToPoint(randomPoint) < 3*Circle.RADIUS){
-                        distanceIsOk = false;
-                        break;
-                    }
-                }
-
-                if (isInLayer & distanceIsOk){
-                    foundPos = true;
-                    Circle newCircle = new Circle(randomPoint, (i+1));
-                    circleListLayer.add(newCircle);
-                }
-
-            }
+            Circle newCircle = getRandomCircleInLayer(screenWidth, screenHeight);
+            newCircle.setSequenceNumberWhenCreated(i+1);
+            circleListLayer.add(newCircle);
         }
     }
+
+    public Circle getRandomCircleInLayer(int screenWidth, int screenHeight) {
+        // find a random position that fulfills the criteria:
+        boolean foundPos = false;
+        while (!foundPos)
+        {
+            // at first take random position on the screen:
+            int randX = (int)( Math.random() * (screenWidth - 2*Circle.RADIUS) ) + Circle.RADIUS;
+            int randY = (int)( Math.random() * (screenHeight - 2*Circle.RADIUS) ) + Circle.RADIUS;
+            Point randomPoint = new Point(randX, randY);
+
+            // then check if this position is even in the layer:
+            boolean isInLayer = testIfInLayer(randomPoint);
+
+            //test if position is far away enough from others (via euclid distance):
+            boolean distanceIsOk = true;
+            for(Circle otherCircle : circleListLayer) {
+                if (otherCircle.getDistanceToPoint(randomPoint) < 3*Circle.RADIUS){
+                    distanceIsOk = false;
+                    break;
+                }
+            }
+
+            if (isInLayer & distanceIsOk)
+                return ( new Circle(randomPoint) );
+
+        }
+        //TODO: zeitliches limit einbauen (falls z.B. aus Platzgründen keine weiteren Kreise mehr erzeugt werden können)?
+        return null;
+    }
+
 
     /**
      * Method sortCircles sorts the circles of this layer by angle relative to the anchor point and

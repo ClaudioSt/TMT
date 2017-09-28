@@ -52,6 +52,12 @@ public class Circle {
         this.sequenceNumberWhenCreated = number;
         setContent();
     }
+    public Circle(Point pt){
+        this.posX = pt.x;
+        this.posY = pt.y;
+        setContent();
+    }
+
 
     /**
      * Method setContent sets the (to the user visible) content of the circles. Depending on the
@@ -90,6 +96,12 @@ public class Circle {
     }
     public Point getPoint(){
         return new Point(posX, posY);
+    }
+    public void setSequenceNumberWhenCreated(int n){
+        sequenceNumberWhenCreated = n;
+    }
+    public int getSequenceNumberWhenCreated(){
+        return sequenceNumberWhenCreated;
     }
     public int getSequenceNumberGlobal(){
         return sequenceNumberGlobal;

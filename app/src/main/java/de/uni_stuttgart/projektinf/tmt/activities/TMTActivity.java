@@ -2,7 +2,6 @@ package de.uni_stuttgart.projektinf.tmt.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
@@ -117,7 +116,7 @@ public class TMTActivity extends AppCompatActivity {
 
         for (int i = 1; i <= NUMBEROFLAYERS; i++){
             // calculate random positions within the layers:
-            layerList.get(i).calculateRandomCirclePositionsInLayer(screenWidth, screenHeight);
+            layerList.get(i).calculateAllRandomCirclesInLayer(screenWidth, screenHeight);
             // sort the positions using anchor point:
             layerList.get(i).sortCircles();
         }
@@ -130,13 +129,22 @@ public class TMTActivity extends AppCompatActivity {
             List<Circle> intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
             // as long as there are intersections, fix these and check again:
             while ( ! intersectionCircles.isEmpty() ){
-
-
-
+                // go through all "bad" segments/circles and generate new random ones:
+                for(Circle badCircle : intersectionCircles) {
+                    int seq = badCircle.getSequenceNumberWhenCreated();
+                    badCircle = layerList.get(i).getRandomCircleInLayer(screenWidth, screenHeight);
+                    badCircle.setSequenceNumberWhenCreated(seq);
+                }
+                // then sort again:
+                layerList.get(i).sortCircles();
 
                 // after the fixings, check again if there are any other intersections:
                 intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
             }
+        }
+        
+        // now find the pivot circles and connect the layer paths:
+        for (int i = NUMBEROFLAYERS; i > 1; i--){
 
         }
 
