@@ -114,7 +114,7 @@ public class TMTActivity extends AppCompatActivity {
         layerList.add(layer3);
 
 
-        for (int i = 1; i <= NUMBEROFLAYERS; i++){
+        for (int i = 0; i < NUMBEROFLAYERS; i++){
             // calculate random positions within the layers:
             layerList.get(i).calculateAllRandomCirclesInLayer(screenWidth, screenHeight);
             // sort the positions using anchor point:
@@ -124,7 +124,7 @@ public class TMTActivity extends AppCompatActivity {
 
         // ------------ COMBINE PHASE: -------------------------------------------------------------
 
-        for (int i = NUMBEROFLAYERS; i > 1; i--){
+        for (int i = NUMBEROFLAYERS - 1; i > 0; i--){
             // test for intersections:
             List<Circle> intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
             // as long as there are intersections, fix these and check again:
@@ -143,23 +143,37 @@ public class TMTActivity extends AppCompatActivity {
             }
         }
 
-        // now find the pivot circles in the layers and connect the layer paths:
-        for (int i = NUMBEROFLAYERS; i > 1; i--){
+        // now find the pivot circles in the layers and rearrange the layer paths:
+        for (int i = 0; i < NUMBEROFLAYERS - 1; i++) {
             // get the last circle of the inner layer:
-            List<Circle> innerLayerList = layerList.get(i-1).getLayerCircleList();
+            List<Circle> innerLayerList = layerList.get(i).getLayerCircleList();
             int last = innerLayerList.size() - 1;
             Circle lastInInnerLayer = innerLayerList.get(last);
 
-            List<Circle> outerLayerList = layerList.get(i).getLayerCircleList();
+            List<Circle> outerLayerList = layerList.get(i + 1).getLayerCircleList();
 
             // get the pivot circle in outer layer:
             Circle pivotCircle = findPivotCircle(lastInInnerLayer, innerLayerList, outerLayerList);
 
-            // connect inner and outer layer via pivot circle:
-
-
+            // rearrange outer layer sequence according to pivot circle:
+            int pivotIndex = outerLayerList.indexOf(pivotCircle);
+            if (pivotIndex != 0) {
+                List<Circle> backEndPart = new ArrayList<Circle>(outerLayerList.subList(0, pivotIndex));
+                outerLayerList.addAll(backEndPart);
+                outerLayerList.subList(0, pivotIndex).clear();
+            }
         }
 
+        // finally connect all layers by giving global sequence numbera and adding to global circle
+        // list:
+        int globalIndex = 0;
+        for (int i = 0; i < NUMBEROFLAYERS; i++) {
+            for(Circle c : layerList.get(i).getLayerCircleList()) {
+                c.sequenceNumberGlobal = globalIndex;
+                globalIndex++;
+                circleList.add(c);
+            }
+        }
 
     }
 
