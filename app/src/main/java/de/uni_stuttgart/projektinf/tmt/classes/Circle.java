@@ -15,7 +15,7 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
 public class Circle {
 
     // Circle radius:
-    public static final int RADIUS = 100;
+    public static final int RADIUS = 70;
     // Circle stroke width (thickness of the circle line):
     public static final float strokeWidth = 4.5f;
     // Tolerance in pixels for checking if touched:
@@ -44,18 +44,15 @@ public class Circle {
         this.posX = x;
         this.posY = y;
         this.sequenceNumberWhenCreated = number;
-        setContent();
     }
     public Circle(Point pt, int number){
         this.posX = pt.x;
         this.posY = pt.y;
         this.sequenceNumberWhenCreated = number;
-        setContent();
     }
     public Circle(Point pt){
         this.posX = pt.x;
         this.posY = pt.y;
-        setContent();
     }
 
 
@@ -102,6 +99,10 @@ public class Circle {
     }
     public int getSequenceNumberWhenCreated(){
         return sequenceNumberWhenCreated;
+    }
+    public void setSequenceNumberGlobal(int n){
+        sequenceNumberGlobal = n;
+        setContent();
     }
     public int getSequenceNumberGlobal(){
         return sequenceNumberGlobal;

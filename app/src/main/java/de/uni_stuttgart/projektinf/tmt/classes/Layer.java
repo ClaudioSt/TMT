@@ -1,6 +1,7 @@
 package de.uni_stuttgart.projektinf.tmt.classes;
 
 import android.graphics.Point;
+import android.util.Log;
 import android.view.Display;
 
 import java.util.ArrayList;
@@ -36,12 +37,12 @@ public class Layer {
     public Layer (int n, int bl, int el, int br, int er, int bt, int et, int bb, int eb ){
         this.numberOfCirclesInLayer = n;
         this.beginLeft = bl;
-        this.beginRight = br;
         this.endLeft = el;
+        this.beginRight = br;
         this.endRight = er;
         this.beginTop = bt;
-        this.beginBottom = bb;
         this.endTop = et;
+        this.beginBottom = bb;
         this.endBottom = eb;
 
         // take bottom left point as anchor point (as suggested in the paper):
@@ -85,7 +86,7 @@ public class Layer {
                 }
             }
 
-            if (isInLayer & distanceIsOk)
+            if (isInLayer && distanceIsOk)
                 return ( new Circle(randomPoint) );
 
         }
@@ -132,22 +133,21 @@ public class Layer {
     public boolean testIfInLayer(Point point){
         boolean isInLayer = true;
 
+        // first check if totally outside:
         if (point.x < beginLeft)
-            isInLayer = false;
-        else if (point.x > endLeft)
-            isInLayer = false;
-        else if (point.x < beginRight)
             isInLayer = false;
         else if (point.x > endRight)
             isInLayer = false;
         else if (point.y < beginTop)
             isInLayer = false;
-        else if (point.y > endTop)
-            isInLayer = false;
-        else if (point.y < beginBottom)
-            isInLayer = false;
         else if (point.y > endBottom)
             isInLayer = false;
+        // then check if not in an inside layer:
+        else if (point.x > endLeft)
+            if (point.x < beginRight)
+                if (point.y > endTop)
+                    if (point.y < beginBottom)
+                        isInLayer = false;
 
         return isInLayer;
     }

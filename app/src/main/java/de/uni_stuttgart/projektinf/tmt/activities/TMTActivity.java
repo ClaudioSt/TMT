@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 
@@ -26,8 +28,7 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
  */
 public class TMTActivity extends AppCompatActivity {
 
-    //public static final int NUMBEROFCIRCLES = 25;
-    public static final int NUMBEROFCIRCLES = 10;
+    public static final int NUMBEROFCIRCLES = 20;
     public static int currentCircleNumber = 1;
     List<Circle> circleList = new ArrayList<Circle>();
     private TMTView tmtView;
@@ -52,16 +53,43 @@ public class TMTActivity extends AppCompatActivity {
         // create helper object for the many calculations:
         TMTCalculator = new TMTCalc();
 
-        // calculate positions of circles using the DAC algorithm:
-        //calculateCirclePositionsDAC();
+        // use separate thread for the more computational circle position calculations:
+        new TMTActivity.WorkTask(this).execute();
+    }
 
-        // calculate random positions of circles:
-        calculateRandomCirclePositions();
 
-        // send circles to View to draw:
-        tmtView.setCircles(circleList);
+    private class WorkTask extends AsyncTask<Void, Integer, Void> {
+        Context context;
 
-        TMTCalculator.startTMT();
+        private WorkTask(Context context) {
+            this.context = context.getApplicationContext();
+        }
+
+        //The code to be executed in a background thread.
+        @Override
+        protected Void doInBackground(Void... params)
+        {
+            // calculate positions of circles using the DAC algorithm:
+            calculateCirclePositionsDAC();
+
+            // calculate random positions of circles (FOR TESTING):
+            //calculateRandomCirclePositions();
+
+            return null;
+        }
+
+        //after executing the code in the thread
+        @Override
+        protected void onPostExecute(Void result)
+        {
+            super.onPostExecute(result);
+
+            // send circles to View to draw:
+            tmtView.setCircles(circleList);
+
+            TMTCalculator.startTMT();
+        }
+
     }
 
 
@@ -94,26 +122,26 @@ public class TMTActivity extends AppCompatActivity {
         int centerY = screenHeight/2;
 
         // create the layers:
-        Layer layer1 = new Layer(8,
-                                    centerX, centerX - sixthOfScreenWidth,
-                                    centerX, centerX + sixthOfScreenWidth,
-                                    centerY, centerY - sixthOfScreenHeight,
-                                    centerY, centerY + sixthOfScreenHeight);
+        Layer layer1 = new Layer(5,
+                                    centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
+                                    centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
+                                    centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight,
+                                    centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight);
         layerList.add(layer1);
-        Layer layer2 = new Layer(8,
-                                    centerX - sixthOfScreenWidth, centerX - 2*sixthOfScreenWidth,
+        Layer layer2 = new Layer(7,
+                                    centerX - 2*sixthOfScreenWidth, centerX - sixthOfScreenWidth,
                                     centerX + sixthOfScreenWidth, centerX + 2*sixthOfScreenWidth,
-                                    centerY - sixthOfScreenHeight, centerY - 2*sixthOfScreenHeight,
+                                    centerY - 2*sixthOfScreenHeight, centerY - sixthOfScreenHeight,
                                     centerY + sixthOfScreenHeight, centerY + 2*sixthOfScreenHeight);
         layerList.add(layer2);
-        Layer layer3 = new Layer(9,
-                                    centerX - 2*sixthOfScreenWidth, 0,
+        Layer layer3 = new Layer(8,
+                                    0, centerX - 2*sixthOfScreenWidth,
                                     centerX + 2*sixthOfScreenWidth, screenWidth,
-                                    centerY - 2*sixthOfScreenHeight, 0,
+                                    0, centerY - 2*sixthOfScreenHeight,
                                     centerY + 2*sixthOfScreenHeight, screenHeight);
         layerList.add(layer3);
 
-
+        // generate circles in each layer and sort them:
         for (int i = 0; i < NUMBEROFLAYERS; i++){
             // calculate random positions within the layers:
             layerList.get(i).calculateAllRandomCirclesInLayer(screenWidth, screenHeight);
@@ -169,7 +197,7 @@ public class TMTActivity extends AppCompatActivity {
         int globalIndex = 0;
         for (int i = 0; i < NUMBEROFLAYERS; i++) {
             for(Circle c : layerList.get(i).getLayerCircleList()) {
-                c.sequenceNumberGlobal = globalIndex;
+                c.setSequenceNumberGlobal(globalIndex);
                 globalIndex++;
                 circleList.add(c);
             }
@@ -250,7 +278,6 @@ public class TMTActivity extends AppCompatActivity {
         return testResult;
     }
 
-
     /**
      * Method calculateRandomCirclePositions generates the circles and their global sequence.
      * It simply generates random circles and takes their "creation sequence" as the global
@@ -292,7 +319,7 @@ public class TMTActivity extends AppCompatActivity {
                 if (distanceIsOk){
                     foundPos = true;
                     Circle newCircle = new Circle(randX, randY, (i+1));
-                    newCircle.sequenceNumberGlobal = (i+1);
+                    newCircle.setSequenceNumberGlobal(i+1);
                     circleList.add(newCircle);
                 }
 
