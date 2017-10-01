@@ -28,7 +28,7 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
  */
 public class TMTActivity extends AppCompatActivity {
 
-    public static final int NUMBEROFCIRCLES = 20;
+    public static final int NUMBEROFCIRCLES = 10;
     public static int currentCircleNumber = 1;
     List<Circle> circleList = new ArrayList<Circle>();
     private TMTView tmtView;
@@ -122,19 +122,19 @@ public class TMTActivity extends AppCompatActivity {
         int centerY = screenHeight/2;
 
         // create the layers:
-        Layer layer1 = new Layer(5,
+        Layer layer1 = new Layer(3,
                                     centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
                                     centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
                                     centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight,
                                     centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight);
         layerList.add(layer1);
-        Layer layer2 = new Layer(7,
+        Layer layer2 = new Layer(3,
                                     centerX - 2*sixthOfScreenWidth, centerX - sixthOfScreenWidth,
                                     centerX + sixthOfScreenWidth, centerX + 2*sixthOfScreenWidth,
                                     centerY - 2*sixthOfScreenHeight, centerY - sixthOfScreenHeight,
                                     centerY + sixthOfScreenHeight, centerY + 2*sixthOfScreenHeight);
         layerList.add(layer2);
-        Layer layer3 = new Layer(8,
+        Layer layer3 = new Layer(4,
                                     0, centerX - 2*sixthOfScreenWidth,
                                     centerX + 2*sixthOfScreenWidth, screenWidth,
                                     0, centerY - 2*sixthOfScreenHeight,
@@ -154,20 +154,27 @@ public class TMTActivity extends AppCompatActivity {
 
         for (int i = NUMBEROFLAYERS - 1; i > 0; i--){
             // test for intersections:
-            List<Circle> intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
+            Circle badCircle = testAdjacentLayersIntersect(layerList.get(i), layerList.get(i-1));
             // as long as there are intersections, fix these and check again:
-            while ( ! intersectionCircles.isEmpty() ){
-                // go through all "bad" segments/circles and generate new random ones:
-                for(Circle badCircle : intersectionCircles) {
-                    int seq = badCircle.getSequenceNumberWhenCreated();
-                    badCircle = layerList.get(i).getRandomCircleInLayer(screenWidth, screenHeight);
-                    badCircle.setSequenceNumberWhenCreated(seq);
-                }
+            while ( badCircle != null ){
+                // get sequence numbers of old bad circle:
+                int seqCreated = badCircle.getSequenceNumberWhenCreated();
+                int seqLayer = badCircle.getSequenceNumberLayer();
+                // delete old bad circle from lists:
+                layerList.get(i).getLayerCircleList().remove(badCircle);
+                // generate new random circle:
+                Circle newCircle = layerList.get(i).getRandomCircleInLayer(screenWidth, screenHeight);
+                // give new circle sequence numbers of the old:
+                newCircle.setSequenceNumberWhenCreated(seqCreated);
+                newCircle.setSequenceNumberLayer(seqLayer);
+                // add new circle to the layer list:
+                layerList.get(i).getLayerCircleList().add(newCircle);
+
                 // then sort again:
                 layerList.get(i).sortCircles();
 
                 // after the fixings, check again if there are any other intersections:
-                intersectionCircles = testLayersIntersect(layerList.get(i), layerList.get(i-1));
+                badCircle = testAdjacentLayersIntersect(layerList.get(i), layerList.get(i-1));
             }
         }
 
@@ -213,16 +220,14 @@ public class TMTActivity extends AppCompatActivity {
             for (int j = 0; j < outerLayerList.size() - 1; j++) {
                 Circle c1 = outerLayerList.get(j);
                 Circle c2 = outerLayerList.get(j + 1);
-                List<Circle> testResult = testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2);
-                if (!testResult.isEmpty())
+                if ( testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2) )
                     continue testPivotLoop;
             }
             // then test against the segments in inner layer:
             for (int j = 0; j < innerLayerList.size() - 1; j++) {
-                Circle c1 = outerLayerList.get(j);
-                Circle c2 = outerLayerList.get(j + 1);
-                List<Circle> testResult = testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2);
-                if (!testResult.isEmpty())
+                Circle c1 = innerLayerList.get(j);
+                Circle c2 = innerLayerList.get(j + 1);
+                if ( testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2) )
                     continue testPivotLoop;
             }
             return testPivot;
@@ -230,8 +235,7 @@ public class TMTActivity extends AppCompatActivity {
         return null;
     }
 
-    private List<Circle> testLayersIntersect(Layer layer1, Layer layer2) {
-        List<Circle> testResult = new ArrayList<Circle>();
+    private Circle testAdjacentLayersIntersect(Layer layer1, Layer layer2) {
         // go through all segments of the layer path:
         for (int i = 0; i < layer1.getLayerCircleList().size() - 1; i++){
             Circle c1 = layer1.getLayerCircleList().get(i);
@@ -240,20 +244,16 @@ public class TMTActivity extends AppCompatActivity {
             for (int j = 0; j < layer2.getLayerCircleList().size() - 1; j++){
                 Circle circ1 = layer2.getLayerCircleList().get(j);
                 Circle circ2 = layer2.getLayerCircleList().get(j+1);
-                testResult = testSegmentsIntersect(c1, c2, circ1, circ2);
-                if ( !testResult.isEmpty() ){
-                    Log.i("bla", "INTERSECTION");
-                    return testResult;
-                }
+                if ( testSegmentsIntersect(c1, c2, circ1, circ2) )
+                    return c1;
 
             }
         }
-        // otherwise return the empty list:
-        return testResult;
+        // otherwise return null:
+        return null;
     }
 
-    private List<Circle> testSegmentsIntersect(Circle c1, Circle c2, Circle circ1, Circle circ2){
-        List<Circle> testResult = new ArrayList<Circle>();
+    private boolean testSegmentsIntersect(Circle c1, Circle c2, Circle circ1, Circle circ2){
         // bounding box of segment between c1 and c2 for pre-test:
         Rect r1 = getBoundingBox(c1, c2);
         // bounding box of segment between circ1 and circ2 for pre-test:
@@ -261,7 +261,6 @@ public class TMTActivity extends AppCompatActivity {
 
         // first do a pre-test if the bounding boxes intersect:
         if (Rect.intersects(r1, r2)){
-            Log.i("bla", "Test");
             // if yes, there is a possibility the segments intersect...
             // therefore do a mathematical exact test:
             float slope1 = (float)(c1.getPosY() - c2.getPosY()) / (float)(c1.getPosX() - c2.getPosX());
@@ -271,20 +270,16 @@ public class TMTActivity extends AppCompatActivity {
             // intersection point via formula:
             int intX = (int) ((yInt2 - yInt1) / (slope1 - slope2));
 
-            Log.i("bla", "slope 1: " + slope1);
-            Log.i("bla", "slope 2: " + slope2);
-
-
             // test if intersection point is within both segments:
             if ( Math.min(c1.getPosX(), c2.getPosX()) <= intX )
                 if ( intX <= Math.max(c1.getPosX(), c2.getPosX()) )
                     if ( Math.min(circ1.getPosX(), circ2.getPosX()) <= intX )
                         if ( intX <= Math.max(circ1.getPosX(), circ2.getPosX()) )
-                            // intersection happens, return the corresponding circles:
-                            return ( new ArrayList<Circle>(Arrays.asList(c1,c2)) );
+                            // intersection happens:
+                            return true;
         }
-        // otherwise return the empty list:
-        return testResult;
+        // otherwise nothing happened:
+        return false;
     }
 
     /**

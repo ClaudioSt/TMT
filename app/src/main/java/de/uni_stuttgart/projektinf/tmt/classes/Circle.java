@@ -100,6 +100,12 @@ public class Circle {
     public int getSequenceNumberWhenCreated(){
         return sequenceNumberWhenCreated;
     }
+    public void setSequenceNumberLayer(int n){
+        sequenceNumberLayer = n;
+    }
+    public int getSequenceNumberLayer(){
+        return sequenceNumberLayer;
+    }
     public void setSequenceNumberGlobal(int n){
         sequenceNumberGlobal = n;
         setContent();
