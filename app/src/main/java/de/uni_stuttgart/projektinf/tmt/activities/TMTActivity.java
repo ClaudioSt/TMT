@@ -238,8 +238,8 @@ public class TMTActivity extends AppCompatActivity {
             Circle c2 = layer1.getLayerCircleList().get(i+1);
             // test this segment with all other segments of layer2:
             for (int j = 0; j < layer2.getLayerCircleList().size() - 1; j++){
-                Circle circ1 = layer1.getLayerCircleList().get(i);
-                Circle circ2 = layer1.getLayerCircleList().get(i+1);
+                Circle circ1 = layer2.getLayerCircleList().get(i);
+                Circle circ2 = layer2.getLayerCircleList().get(i+1);
                 testResult = testSegmentsIntersect(c1, c2, circ1, circ2);
                 if ( !testResult.isEmpty() )
                     return testResult;
@@ -258,14 +258,20 @@ public class TMTActivity extends AppCompatActivity {
 
         // first do a pre-test if the bounding boxes intersect:
         if (Rect.intersects(r1, r2)){
+            Log.i("bla", "Test");
             // if yes, there is a possibility the segments intersect...
             // therefore do a mathematical exact test:
-            float slope1 = (c1.getPosY() - c2.getPosY()) / (c1.getPosX() - c2.getPosX());
-            float slope2 = (circ1.getPosY() - circ2.getPosY()) / (circ1.getPosX() - circ2.getPosX());
+            float slope1 = (float)(c1.getPosY() - c2.getPosY()) / (float)(c1.getPosX() - c2.getPosX());
+            float slope2 = (float)(circ1.getPosY() - circ2.getPosY()) / (float)(circ1.getPosX() - circ2.getPosX());
             float yInt1 = c1.getPosY() - slope1 * c1.getPosX();
             float yInt2 = circ1.getPosY() - slope2 * circ1.getPosX();
             // intersection point via formula:
             int intX = (int) ((yInt2 - yInt1) / (slope1 - slope2));
+
+            Log.i("bla", "slope 1: " + slope1);
+            Log.i("bla", "slope 2: " + slope2);
+
+
             // test if intersection point is within both segments:
             if ( Math.min(c1.getPosX(), c2.getPosX()) <= intX )
                 if ( intX <= Math.max(c1.getPosX(), c2.getPosX()) )
