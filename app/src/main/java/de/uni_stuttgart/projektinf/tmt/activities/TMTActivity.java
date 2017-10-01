@@ -238,11 +238,14 @@ public class TMTActivity extends AppCompatActivity {
             Circle c2 = layer1.getLayerCircleList().get(i+1);
             // test this segment with all other segments of layer2:
             for (int j = 0; j < layer2.getLayerCircleList().size() - 1; j++){
-                Circle circ1 = layer2.getLayerCircleList().get(i);
-                Circle circ2 = layer2.getLayerCircleList().get(i+1);
+                Circle circ1 = layer2.getLayerCircleList().get(j);
+                Circle circ2 = layer2.getLayerCircleList().get(j+1);
                 testResult = testSegmentsIntersect(c1, c2, circ1, circ2);
-                if ( !testResult.isEmpty() )
+                if ( !testResult.isEmpty() ){
+                    Log.i("bla", "INTERSECTION");
                     return testResult;
+                }
+
             }
         }
         // otherwise return the empty list:
