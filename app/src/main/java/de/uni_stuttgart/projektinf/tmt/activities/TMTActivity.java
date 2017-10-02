@@ -28,12 +28,13 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
  */
 public class TMTActivity extends AppCompatActivity {
 
-    public static final int NUMBEROFCIRCLES = 20;
+    public static final int NUMBEROFCIRCLES = 15;
     public static int currentCircleNumber = 1;
     List<Circle> circleList = new ArrayList<Circle>();
     private TMTView tmtView;
     private static Context thisContext;
     private static TMTCalc TMTCalculator;
+    private WorkTask task;
 
 
     @Override
@@ -54,7 +55,8 @@ public class TMTActivity extends AppCompatActivity {
         TMTCalculator = new TMTCalc();
 
         // use separate thread for the more computational circle position calculations:
-        new TMTActivity.WorkTask(this).execute();
+        task = new TMTActivity.WorkTask(this);
+        task.execute();
     }
 
 
@@ -103,114 +105,126 @@ public class TMTActivity extends AppCompatActivity {
      * @see Circle
      * @see Layer
      */
-    private void calculateCirclePositionsDAC(){
+    private void calculateCirclePositionsDAC() {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getRealSize(size);
         int screenWidth = size.x;
         int screenHeight = size.y;
 
+        //
+        boolean SUCCESS = false;
+        theBigWhileLoop:
+        while (!SUCCESS) {
 
-        // ------------ DIVIDE PHASE: --------------------------------------------------------------
+            // ------------ DIVIDE PHASE: --------------------------------------------------------------
 
-        final int NUMBEROFLAYERS = 3;
-        List<Layer> layerList = new ArrayList<Layer>();
+            final int NUMBEROFLAYERS = 3;
+            List<Layer> layerList = new ArrayList<Layer>();
 
-        int sixthOfScreenWidth = screenWidth/6;
-        int sixthOfScreenHeight = screenHeight/6;
-        int centerX = screenWidth/2;
-        int centerY = screenHeight/2;
+            int sixthOfScreenWidth = screenWidth / 6;
+            int sixthOfScreenHeight = screenHeight / 6;
+            int centerX = screenWidth / 2;
+            int centerY = screenHeight / 2;
 
-        // create the layers:
-        Layer layer1 = new Layer(5,
-                                    centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
-                                    centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
-                                    centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight,
-                                    centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight);
-        layerList.add(layer1);
-        Layer layer2 = new Layer(7,
-                                    centerX - 2*sixthOfScreenWidth, centerX - sixthOfScreenWidth,
-                                    centerX + sixthOfScreenWidth, centerX + 2*sixthOfScreenWidth,
-                                    centerY - 2*sixthOfScreenHeight, centerY - sixthOfScreenHeight,
-                                    centerY + sixthOfScreenHeight, centerY + 2*sixthOfScreenHeight);
-        layerList.add(layer2);
-        Layer layer3 = new Layer(8,
-                                    0, centerX - 2*sixthOfScreenWidth,
-                                    centerX + 2*sixthOfScreenWidth, screenWidth,
-                                    0, centerY - 2*sixthOfScreenHeight,
-                                    centerY + 2*sixthOfScreenHeight, screenHeight);
-        layerList.add(layer3);
-
-        // generate circles in each layer and sort them:
-        for (int i = 0; i < NUMBEROFLAYERS; i++){
-            // calculate random positions within the layers:
-            layerList.get(i).calculateAllRandomCirclesInLayer(screenWidth, screenHeight);
-            // sort the positions using anchor point:
-            layerList.get(i).sortCircles();
-        }
+            // create the layers:
+            Layer layer1 = new Layer(5,
+                    centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
+                    centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
+                    centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight,
+                    centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight);
+            layerList.add(layer1);
+            Layer layer2 = new Layer(5,
+                    centerX - 2 * sixthOfScreenWidth, centerX - sixthOfScreenWidth,
+                    centerX + sixthOfScreenWidth, centerX + 2 * sixthOfScreenWidth,
+                    centerY - 2 * sixthOfScreenHeight, centerY - sixthOfScreenHeight,
+                    centerY + sixthOfScreenHeight, centerY + 2 * sixthOfScreenHeight);
+            layerList.add(layer2);
+            Layer layer3 = new Layer(5,
+                    0, centerX - 2 * sixthOfScreenWidth,
+                    centerX + 2 * sixthOfScreenWidth, screenWidth,
+                    0, centerY - 2 * sixthOfScreenHeight,
+                    centerY + 2 * sixthOfScreenHeight, screenHeight);
+            layerList.add(layer3);
 
 
-        // ------------ COMBINE PHASE: -------------------------------------------------------------
-
-        for (int i = NUMBEROFLAYERS - 1; i > 0; i--){
-            // test for intersections:
-            Circle badCircle = testAdjacentLayersIntersect(layerList.get(i), layerList.get(i-1));
-            // as long as there are intersections, fix these and check again:
-            while ( badCircle != null ){
-                // get sequence numbers of old bad circle:
-                int seqCreated = badCircle.getSequenceNumberWhenCreated();
-                int seqLayer = badCircle.getSequenceNumberLayer();
-                // delete old bad circle from lists:
-                layerList.get(i).getLayerCircleList().remove(badCircle);
-                // generate new random circle:
-                Circle newCircle = layerList.get(i).getRandomCircleInLayer(screenWidth, screenHeight);
-                // give new circle sequence numbers of the old:
-                newCircle.setSequenceNumberWhenCreated(seqCreated);
-                newCircle.setSequenceNumberLayer(seqLayer);
-                // add new circle to the layer list:
-                layerList.get(i).getLayerCircleList().add(newCircle);
-
-                // then sort again:
+            // generate circles in each layer and sort them:
+            for (int i = 0; i < NUMBEROFLAYERS; i++) {
+                // calculate random positions within the layers:
+                layerList.get(i).calculateAllRandomCirclesInLayer(screenWidth, screenHeight);
+                // sort the positions using anchor point:
                 layerList.get(i).sortCircles();
+            }
 
-                // after the fixings, check again if there are any other intersections:
-                badCircle = testAdjacentLayersIntersect(layerList.get(i), layerList.get(i-1));
+
+            // ------------ COMBINE PHASE: -------------------------------------------------------------
+
+            for (int i = 0; i < NUMBEROFLAYERS - 1;  i++) {
+                // test for intersections:
+                Circle badCircle = testAdjacentLayersIntersect(layerList.get(i), layerList.get(i + 1));
+                // as long as there are intersections, fix these and check again:
+                while (badCircle != null) {
+                    // get sequence numbers of old bad circle and index in the list:
+                    int seqCreated = badCircle.getSequenceNumberWhenCreated();
+                    int seqLayer = badCircle.getSequenceNumberLayer();
+                    int index = layerList.get(i+1).getLayerCircleList().indexOf(badCircle);
+                    // delete old bad circle from lists:
+                    layerList.get(i+1).getLayerCircleList().remove(badCircle);
+                    // generate new random circle:
+                    Circle newCircle = layerList.get(i+1).getRandomCircleInLayer(screenWidth, screenHeight);
+                    // give new circle sequence numbers of the old:
+                    newCircle.setSequenceNumberWhenCreated(seqCreated);
+                    newCircle.setSequenceNumberLayer(seqLayer);
+                    // add new circle to the layer list:
+                    layerList.get(i+1).getLayerCircleList().add(index, newCircle);
+
+                    // then sort again:
+                    layerList.get(i+1).sortCircles();
+
+                    // after the fixings, check again if there are any other intersections:
+                    badCircle = testAdjacentLayersIntersect(layerList.get(i), layerList.get(i + 1));
+                }
+            }
+
+            // now find the pivot circles in the layers and rearrange the layer paths:
+            for (int i = 0; i < NUMBEROFLAYERS - 1; i++) {
+                // get the last circle of the inner layer:
+                List<Circle> innerLayerList = layerList.get(i).getLayerCircleList();
+                int last = innerLayerList.size() - 1;
+                Circle lastInInnerLayer = innerLayerList.get(last);
+
+                List<Circle> outerLayerList = layerList.get(i + 1).getLayerCircleList();
+
+                // get the pivot circle in outer layer:
+                Circle pivotCircle = findPivotCircle(lastInInnerLayer, innerLayerList, outerLayerList);
+
+                // rearrange outer layer sequence according to pivot circle:
+                int pivotIndex = outerLayerList.indexOf(pivotCircle);
+                Log.i("bla", "outerLayerListSize: " + outerLayerList.size());
+                Log.i("bla", "PivotIndex: " + pivotIndex);
+                if (pivotIndex == -1) {
+                    continue theBigWhileLoop;
+                } else if (pivotIndex != 0) {
+                    List<Circle> backEndPart = new ArrayList<Circle>(outerLayerList.subList(0, pivotIndex));
+                    outerLayerList.addAll(backEndPart);
+                    outerLayerList.subList(0, pivotIndex).clear();
+                }
+            }
+            SUCCESS = true;
+            // finally connect all layers by giving global sequence numbers and adding to global circle
+            // list:
+            int globalIndex = 1;
+            for (int i = 0; i < NUMBEROFLAYERS; i++) {
+                for (Circle c : layerList.get(i).getLayerCircleList()) {
+                    c.setSequenceNumberGlobal(globalIndex);
+                    globalIndex++;
+                    circleList.add(c);
+                }
             }
         }
 
-        // now find the pivot circles in the layers and rearrange the layer paths:
-        for (int i = 0; i < NUMBEROFLAYERS - 1; i++) {
-            // get the last circle of the inner layer:
-            List<Circle> innerLayerList = layerList.get(i).getLayerCircleList();
-            int last = innerLayerList.size() - 1;
-            Circle lastInInnerLayer = innerLayerList.get(last);
 
-            List<Circle> outerLayerList = layerList.get(i + 1).getLayerCircleList();
 
-            // get the pivot circle in outer layer:
-            Circle pivotCircle = findPivotCircle(lastInInnerLayer, innerLayerList, outerLayerList);
-
-            // rearrange outer layer sequence according to pivot circle:
-            int pivotIndex = outerLayerList.indexOf(pivotCircle);
-            Log.i("bla", "outerLayerListSize: " + outerLayerList.size());
-            Log.i("bla", "PivotIndex: " + pivotIndex);
-            if (pivotIndex != 0) {
-                List<Circle> backEndPart = new ArrayList<Circle>(outerLayerList.subList(0, pivotIndex));
-                outerLayerList.addAll(backEndPart);
-                outerLayerList.subList(0, pivotIndex).clear();
-            }
-        }
-
-        // finally connect all layers by giving global sequence numbers and adding to global circle
-        // list:
-        int globalIndex = 1;
-        for (int i = 0; i < NUMBEROFLAYERS; i++) {
-            for(Circle c : layerList.get(i).getLayerCircleList()) {
-                c.setSequenceNumberGlobal(globalIndex);
-                globalIndex++;
-                circleList.add(c);
-            }
-        }
 
     }
 
@@ -256,7 +270,7 @@ public class TMTActivity extends AppCompatActivity {
                 Circle circ1 = layer2.getLayerCircleList().get(j);
                 Circle circ2 = layer2.getLayerCircleList().get(j+1);
                 if ( testSegmentsIntersect(c1, c2, circ1, circ2) )
-                    return c1;
+                    return circ1;
 
             }
         }
@@ -282,10 +296,10 @@ public class TMTActivity extends AppCompatActivity {
             int intX = (int) ((yInt2 - yInt1) / (slope1 - slope2));
 
             // test if intersection point is within both segments:
-            if ( Math.min(c1.getPosX(), c2.getPosX()) - Circle.RADIUS < intX )
-                if ( intX < Math.max(c1.getPosX(), c2.getPosX()) + Circle.RADIUS)
-                    if ( Math.min(circ1.getPosX(), circ2.getPosX()) - Circle.RADIUS < intX )
-                        if ( intX < Math.max(circ1.getPosX(), circ2.getPosX()) + Circle.RADIUS )
+            if ( Math.min(c1.getPosX(), c2.getPosX()) - 2*Circle.RADIUS < intX )
+                if ( intX < Math.max(c1.getPosX(), c2.getPosX()) + 2*Circle.RADIUS)
+                    if ( Math.min(circ1.getPosX(), circ2.getPosX()) - 2*Circle.RADIUS < intX )
+                        if ( intX < Math.max(circ1.getPosX(), circ2.getPosX()) + 2*Circle.RADIUS )
                             // intersection happens:
                             return true;
         }
@@ -350,6 +364,7 @@ public class TMTActivity extends AppCompatActivity {
                             Math.max(c1.getPosX(), c2.getPosX()),
                             Math.max(c1.getPosY(), c2.getPosY())    );
     }
+
 
     public static void TMTCompleted() {
         // stop timer:

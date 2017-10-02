@@ -79,6 +79,7 @@ public class Layer {
 
             //test if position is far away enough from others (via euclid distance):
             boolean distanceIsOk = true;
+            //TODO: also test with other layers...
             for(Circle otherCircle : circleListLayer) {
                 if (otherCircle.getDistanceToPoint(randomPoint) < 3*Circle.RADIUS){
                     distanceIsOk = false;
