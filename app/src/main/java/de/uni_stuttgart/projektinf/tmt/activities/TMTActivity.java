@@ -28,7 +28,7 @@ import de.uni_stuttgart.projektinf.tmt.helper_classes.TMTView;
  */
 public class TMTActivity extends AppCompatActivity {
 
-    public static final int NUMBEROFCIRCLES = 10;
+    public static final int NUMBEROFCIRCLES = 20;
     public static int currentCircleNumber = 1;
     List<Circle> circleList = new ArrayList<Circle>();
     private TMTView tmtView;
@@ -122,19 +122,19 @@ public class TMTActivity extends AppCompatActivity {
         int centerY = screenHeight/2;
 
         // create the layers:
-        Layer layer1 = new Layer(3,
+        Layer layer1 = new Layer(5,
                                     centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
                                     centerX - sixthOfScreenWidth, centerX + sixthOfScreenWidth,
                                     centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight,
                                     centerY - sixthOfScreenHeight, centerY + sixthOfScreenHeight);
         layerList.add(layer1);
-        Layer layer2 = new Layer(3,
+        Layer layer2 = new Layer(7,
                                     centerX - 2*sixthOfScreenWidth, centerX - sixthOfScreenWidth,
                                     centerX + sixthOfScreenWidth, centerX + 2*sixthOfScreenWidth,
                                     centerY - 2*sixthOfScreenHeight, centerY - sixthOfScreenHeight,
                                     centerY + sixthOfScreenHeight, centerY + 2*sixthOfScreenHeight);
         layerList.add(layer2);
-        Layer layer3 = new Layer(4,
+        Layer layer3 = new Layer(8,
                                     0, centerX - 2*sixthOfScreenWidth,
                                     centerX + 2*sixthOfScreenWidth, screenWidth,
                                     0, centerY - 2*sixthOfScreenHeight,
@@ -192,6 +192,8 @@ public class TMTActivity extends AppCompatActivity {
 
             // rearrange outer layer sequence according to pivot circle:
             int pivotIndex = outerLayerList.indexOf(pivotCircle);
+            Log.i("bla", "outerLayerListSize: " + outerLayerList.size());
+            Log.i("bla", "PivotIndex: " + pivotIndex);
             if (pivotIndex != 0) {
                 List<Circle> backEndPart = new ArrayList<Circle>(outerLayerList.subList(0, pivotIndex));
                 outerLayerList.addAll(backEndPart);
@@ -199,9 +201,9 @@ public class TMTActivity extends AppCompatActivity {
             }
         }
 
-        // finally connect all layers by giving global sequence numbera and adding to global circle
+        // finally connect all layers by giving global sequence numbers and adding to global circle
         // list:
-        int globalIndex = 0;
+        int globalIndex = 1;
         for (int i = 0; i < NUMBEROFLAYERS; i++) {
             for(Circle c : layerList.get(i).getLayerCircleList()) {
                 c.setSequenceNumberGlobal(globalIndex);
@@ -220,15 +222,24 @@ public class TMTActivity extends AppCompatActivity {
             for (int j = 0; j < outerLayerList.size() - 1; j++) {
                 Circle c1 = outerLayerList.get(j);
                 Circle c2 = outerLayerList.get(j + 1);
-                if ( testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2) )
-                    continue testPivotLoop;
+                // skip checkings containing the pivot itself:
+                if (!c1.equals(testPivot))
+                    if (!c2.equals(testPivot))
+                        // check the (non-pivot containing) segment:
+                        if ( testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2) )
+                            continue testPivotLoop;
+
             }
             // then test against the segments in inner layer:
             for (int j = 0; j < innerLayerList.size() - 1; j++) {
                 Circle c1 = innerLayerList.get(j);
                 Circle c2 = innerLayerList.get(j + 1);
-                if ( testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2) )
-                    continue testPivotLoop;
+                // skip checkings containing the lastInInnerLayer circle itself:
+                if (!c1.equals(lastInInnerLayer))
+                    if (!c2.equals(lastInInnerLayer))
+                        // check the (non-pivot containing) segment:
+                        if ( testSegmentsIntersect(testPivot, lastInInnerLayer, c1, c2) )
+                            continue testPivotLoop;
             }
             return testPivot;
         }
@@ -271,10 +282,10 @@ public class TMTActivity extends AppCompatActivity {
             int intX = (int) ((yInt2 - yInt1) / (slope1 - slope2));
 
             // test if intersection point is within both segments:
-            if ( Math.min(c1.getPosX(), c2.getPosX()) <= intX )
-                if ( intX <= Math.max(c1.getPosX(), c2.getPosX()) )
-                    if ( Math.min(circ1.getPosX(), circ2.getPosX()) <= intX )
-                        if ( intX <= Math.max(circ1.getPosX(), circ2.getPosX()) )
+            if ( Math.min(c1.getPosX(), c2.getPosX()) - Circle.RADIUS < intX )
+                if ( intX < Math.max(c1.getPosX(), c2.getPosX()) + Circle.RADIUS)
+                    if ( Math.min(circ1.getPosX(), circ2.getPosX()) - Circle.RADIUS < intX )
+                        if ( intX < Math.max(circ1.getPosX(), circ2.getPosX()) + Circle.RADIUS )
                             // intersection happens:
                             return true;
         }
